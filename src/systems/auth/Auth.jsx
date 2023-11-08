@@ -9,7 +9,6 @@ export default function Auth() {
 
     const handleToggleLogIn = () => {
         setIsLogin(!isLogin);
-        setEmail("");
         setPassword("");
     };
 
@@ -69,8 +68,9 @@ export default function Auth() {
                                     </div>
                                     <div className="">
                                         <button className="w-[100%] bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                                            <i className="bi bi-apple mr-5"></i>
-                                            Log in with Apple
+                                            {/* <i className="bi bi-apple mr-5"></i> */}
+                                            <i className="bi bi-github mr-5"></i>
+                                            Log in with Github
                                         </button>
                                     </div>
                                 </div>
