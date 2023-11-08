@@ -6,6 +6,8 @@ export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     const handleToggleLogIn = () => {
         setIsLogin(!isLogin);
@@ -25,11 +27,27 @@ export default function Auth() {
                 break;
             }
         }
+        if (!isLogin) {
+            const createName = [firstName, lastName];
+            for (let i = 0; i < createName.length; i++) {
+                if (!createName[i]) {
+                    IsValid = false;
+                    Swal.fire({
+                        icon: "error",
+                        title: "Bạn vui lòng nhập đủ các trường",
+                    });
+                    break;
+                }
+            }
+        }
         return IsValid;
     };
 
     const handleLogIn = () => {
-        handleValidate();
+        const check = handleValidate();
+        if (!check) {
+            return;
+        }
     };
 
     return (
@@ -84,7 +102,7 @@ export default function Auth() {
                                 </div>
 
                                 <div className="">
-                                    <div className="mb-6 my-8">
+                                    <div className="mb-6 my-5">
                                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                             Email
                                         </label>
@@ -100,7 +118,7 @@ export default function Auth() {
                                             }
                                         />
                                     </div>
-                                    <div className="mb-6 my-8">
+                                    <div className="mb-6 my-5">
                                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                             Password
                                         </label>
@@ -117,24 +135,61 @@ export default function Auth() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex">
-                                            <input type="checkbox" />
-                                            <p className="ml-1">Remember me</p>
-                                        </div>
-                                        <div className="">
-                                            {isLogin ? (
+                                    {isLogin ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex">
+                                                <input type="checkbox" />
+                                                <p className="ml-1">
+                                                    Remember me
+                                                </p>
+                                            </div>
+                                            <div className="">
                                                 <a
                                                     className="text-[blue] ml-[40%]"
                                                     href=""
                                                 >
                                                     Quên mật khẩu?
                                                 </a>
-                                            ) : (
-                                                <></>
-                                            )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    first name
+                                                </label>
+                                                <input
+                                                    value={firstName}
+                                                    type="text"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="first name"
+                                                    required
+                                                    onChange={(e) =>
+                                                        setFirstName(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    last name
+                                                </label>
+                                                <input
+                                                    value={lastName}
+                                                    type="text"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="last name"
+                                                    required
+                                                    onChange={(e) =>
+                                                        setLastName(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="w-[100%] mt-5">
                                         <button
