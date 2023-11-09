@@ -7,7 +7,7 @@ export function refreshToken() {
 }
 
 export function CheckRole() {
-    return axios.get("user/current-role", {
+    return axios.get("/user/current-role", {
         withCredentials: true,
     });
 }

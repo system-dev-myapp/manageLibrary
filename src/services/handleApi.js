@@ -8,8 +8,6 @@ export async function HandleApi(api, data = null) {
             try {
                 // Làm mới token trước
                 await refreshToken();
-
-                // Gọi lại API sau khi token được làm mới
                 return await api(data);
             } catch (refreshError) {
                 // Xử lý lỗi làm mới token

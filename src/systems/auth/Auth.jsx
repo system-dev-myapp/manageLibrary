@@ -67,7 +67,6 @@ export default function Auth() {
                     title: "Đăng nhập thành công",
                     text: "Chào mừng bạn đến với LibraryFstack",
                     showConfirmButton: false,
-
                     timer: 1500,
                 });
                 dispatch(loginSuccess(Res.data));
@@ -75,7 +74,6 @@ export default function Auth() {
             }
         } catch (err) {
             console.log(err);
-
             Swal.fire({
                 icon: "error",
                 title: Array.isArray(err?.response?.data?.message)
@@ -97,7 +95,6 @@ export default function Auth() {
                 if (!user) {
                     return;
                 }
-
                 let dataBuider = {
                     email: user?.email,
                     lastName: user?.displayName,
