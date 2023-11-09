@@ -23,7 +23,6 @@ export default function PrivateRouter({ children }) {
         const _fetch = async () => {
             try {
                 const Res = await HandleApi(CheckRole);
-                console.log(Res);
                 if (Res?.role === configUser.role.admin) {
                     setAdmin(true);
                 } else {
@@ -34,7 +33,6 @@ export default function PrivateRouter({ children }) {
                 console.log(error);
             }
         };
-
         _fetch();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate]);
