@@ -149,7 +149,7 @@ export default function Auth() {
                                 trên libraryFstack
                             </p>
                             <img
-                                className="h-[40vh] w-[80vh]"
+                                className="h-[40vh] w-[80vh] object-cover"
                                 src="https://i.pinimg.com/originals/0a/cd/50/0acd5002683fbcf2b720004f201ee530.jpg"
                                 alt="Hình ảnh"
                             />
