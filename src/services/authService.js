@@ -1,9 +1,13 @@
 import axios from "../axios";
 
 export function refreshToken() {
-    return axios.post("auth/refresh-token", {
-        withCredentials: true,
-    });
+    return axios.post(
+        "auth/refresh-token",
+        {},
+        {
+            withCredentials: true,
+        }
+    );
 }
 
 export function CheckRole() {

@@ -18,6 +18,7 @@ export default function Auth() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [userFireBase, setUserFireBase] = useState(false);
 
     const provider = firebaseConfig();
     const isLogin = useSelector((state) => state.authSlice.isLoginIn);
@@ -88,6 +89,9 @@ export default function Auth() {
         if (isLogin) {
             navigate("/");
             return;
+        } else if (!userFireBase) {
+            firebase.auth().signOut();
+            return;
         }
         const LoginFirebase = firebase
             .auth()
@@ -129,7 +133,7 @@ export default function Auth() {
             });
         return () => LoginFirebase();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLogin]);
+    }, [isLogin, userFireBase]);
 
     return (
         <div className="h-[100vh] bg-[#fafafa]">
@@ -161,13 +165,14 @@ export default function Auth() {
                                 <div className="grid grid-cols-2 gap-4 mt-[25px]">
                                     <div className="">
                                         <button
-                                            onClick={() =>
+                                            onClick={() => {
                                                 firebase
                                                     .auth()
                                                     .signInWithPopup(
                                                         provider.googleAuth
-                                                    )
-                                            }
+                                                    );
+                                                setUserFireBase(true);
+                                            }}
                                             className="w-[100%] bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
                                         >
                                             <i className="bi bi-google mr-5 text-blue-300"></i>
