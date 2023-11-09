@@ -1,28 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Row } from "antd";
+import { Col, Row } from "antd";
 import Swal from "sweetalert2";
 import firebase from "firebase/compat/app";
 import { useDispatch, useSelector } from "react-redux";
 import firebaseConfig from "../../helpers/firebase";
+import handleToastPromise from "../../helpers/AlertToastPromise";
+import { toast } from "react-toastify";
 import {
     LogInService,
-    LogInFirebaseService,
-    LogOutService,
+    SignInFirebaseService,
+    SignInService,
 } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../../features/auth/AuthSlice";
-import { configUser } from "../../utils/constant";
-import "firebase/compat/auth";
+// import { SignInService } from "../../services/authService";
 
 export default function Auth() {
+    const [login, setLogin] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     const provider = firebaseConfig();
     const isLogin = useSelector((state) => state.authSlice.isLoginIn);
+    const handleToggleLogIn = () => {
+        setLogin(!login);
+        setPassword("");
+    };
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    useEffect(() => {
+        if (isLogin) {
+            navigate("/");
+        }
+    }, [isLogin, navigate]);
 
     const handleValidate = () => {
         let IsValid = true;
@@ -37,102 +49,113 @@ export default function Auth() {
                 break;
             }
         }
+        if (!login) {
+            const createName = [firstName, lastName];
+            for (let i = 0; i < createName.length; i++) {
+                if (!createName[i]) {
+                    IsValid = false;
+                    Swal.fire({
+                        icon: "error",
+                        title: "Bạn vui lòng nhập đủ các trường",
+                    });
+                    break;
+                }
+            }
+        }
         return IsValid;
     };
 
     const handleLogIn = async () => {
-        setIsLoading(true);
         const check = handleValidate();
         if (!check) {
-            setIsLoading(false);
             return;
         }
+
         let dataBuilder = {
             email: email,
             password: password,
         };
-        try {
-            const Res = await LogInService(dataBuilder);
-            if (Res.data.user.role !== configUser.role.admin) {
-                await LogOutService();
-                Swal.fire({
-                    icon: "error",
-                    title: "Tài khoản này không có quyền truy cập bạn vui lòng thử lại bằng tài khoản khác",
-                });
-                return;
-            }
-            if (Res.statusCode === 200) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Đăng nhập thành công",
-                    text: "Chào mừng bạn đến với LibraryFstack",
-                    showConfirmButton: false,
 
-                    timer: 1500,
-                });
+        if (!login) {
+            dataBuilder.firstName = firstName;
+            dataBuilder.lastName = lastName;
+        }
+
+        let Res;
+        const ID = toast.loading("Loading....");
+        try {
+            handleToastPromise({
+                isLoading: true,
+                text: "Đang gửi dữ liệu của bạn lên server",
+                type: "success",
+                variableLoading: ID,
+            });
+
+            if (login) {
+                Res = await LogInService(dataBuilder);
+                if (!Res.data.user.is_verify_email) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Bạn vui lòng xác thực email",
+                    });
+                    return;
+                }
+            } else {
+                Res = await SignInService(dataBuilder);
+            }
+
+            console.log(Res);
+            handleToastPromise({
+                isLoading: false,
+                text: login
+                    ? "Bạn đã đăng nhập thành công"
+                    : "Bạn đã đăng ký thành công",
+                type: "success",
+                variableLoading: ID,
+            });
+            if (Res.statusCode === 200) {
                 dispatch(loginSuccess(Res.data));
                 navigate("/");
             }
         } catch (err) {
             console.log(err);
-
-            Swal.fire({
-                icon: "error",
-                title: Array.isArray(err?.response?.data?.message)
+            handleToastPromise({
+                isLoading: false,
+                text: Array.isArray(err?.response?.data?.message)
                     ? err?.response?.data?.message.join("")
                     : err?.response?.data?.message,
+                type: "error",
+                variableLoading: ID,
             });
         }
-        setIsLoading(false);
     };
 
-    useEffect(() => {
-        if (isLogin) {
-            navigate("/");
-            return;
-        }
-        const LoginFirebase = firebase
-            .auth()
-            .onAuthStateChanged(async (user) => {
-                if (!user) {
-                    return;
-                }
-
-                let dataBuider = {
-                    email: user?.email,
-                    lastName: user?.displayName,
-                    avatar_url: user?.photoURL,
-                };
-                const _fetch = async () => {
-                    try {
-                        const Res = await LogInFirebaseService(dataBuider);
-                        if (Res.data.user.role !== configUser.role.admin) {
-                            firebase.auth().signOut();
-                            Swal.fire({
-                                icon: "error",
-                                title: "Tài khoản này không có quyền truy cập bạn vui lòng thử lại bằng tài khoản khác",
-                            });
-                            return;
-                        }
-                        if (Res.statusCode === 200) {
-                            dispatch(loginSuccess(Res.data));
-                            navigate("/");
-                        }
-                    } catch (err) {
-                        Swal.fire({
-                            icon: "error",
-                            title: Array.isArray(err?.response?.data?.message)
-                                ? err?.response?.data?.message.join("")
-                                : err?.response?.data?.message,
-                        });
-                        console.log(err);
-                    }
-                };
-                _fetch();
-            });
-        return () => LoginFirebase();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLogin]);
+    // useEffect(() => {
+    //     const LoginFirebase = firebase
+    //         .auth()
+    //         .onAuthStateChanged(async (user) => {
+    //             if (!user) {
+    //                 return;
+    //             }
+    //             let dataBuider = {
+    //                 email: user?.email,
+    //                 lastName: user?.lastName,
+    //                 avatar_url: user?.avatar_url,
+    //             };
+    //             const _fetch = async () => {
+    //                 try {
+    //                     const Res = await SignInFirebaseService(dataBuider);
+    //                     if (Res) {
+    //                         console.log(Res);
+    //                     }
+    //                 } catch (err) {
+    //                     console.log(err);
+    //                 }
+    //             };
+    //             _fetch();
+    //         });
+    //     return () => LoginFirebase();
+    // }, []);
 
     return (
         <div className="h-[100vh] bg-[#fafafa]">
@@ -158,7 +181,7 @@ export default function Auth() {
                         <div className="h-[90%] w-[70%] ml-[20%] bg-[#fff] mt-[10%] shadow-2xl rounded p-5">
                             <div className="container w-[100%]">
                                 <p className="text-[20px] font-medium">
-                                    Đăng nhập
+                                    {login ? "Đăng nhập" : "Đăng ký"}
                                 </p>
 
                                 <div className="grid grid-cols-2 gap-4 mt-[25px]">
@@ -236,29 +259,84 @@ export default function Auth() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex">
-                                            <input type="checkbox" />
-                                            <p className="ml-1">Remember me</p>
+                                    {login ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex">
+                                                <input type="checkbox" />
+                                                <p className="ml-1">
+                                                    Remember me
+                                                </p>
+                                            </div>
+                                            <div className="">
+                                                <a
+                                                    className="text-[blue] ml-[40%]"
+                                                    href=""
+                                                >
+                                                    Quên mật khẩu?
+                                                </a>
+                                            </div>
                                         </div>
-                                        <div className="">
-                                            <a
-                                                className="text-[blue] ml-[40%]"
-                                                href=""
-                                            >
-                                                Quên mật khẩu?
-                                            </a>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    first name
+                                                </label>
+                                                <input
+                                                    value={firstName}
+                                                    type="text"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="first name"
+                                                    required
+                                                    onChange={(e) =>
+                                                        setFirstName(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                                    last name
+                                                </label>
+                                                <input
+                                                    value={lastName}
+                                                    type="text"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    placeholder="last name"
+                                                    required
+                                                    onChange={(e) =>
+                                                        setLastName(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            </div>
                                         </div>
+                                    )}
+
+                                    <div className="w-[100%] mt-5">
+                                        <button
+                                            className="bg-[blue] hover:bg-blue-700 text-white font-bold py-3 px-4 rounded w-[90%] ml-[5%]"
+                                            onClick={handleLogIn}
+                                        >
+                                            {login ? " Đăng nhập" : " Đăng ký"}
+                                        </button>
                                     </div>
 
-                                    <div className="w-[100%] mt-5 h-[45px]">
-                                        <Button
-                                            className="bg-[blue] hover:bg-blue-700 text-white font-bold rounded w-[90%] ml-[5%] h-[100%]"
-                                            onClick={handleLogIn}
-                                            loading={isLoading}
+                                    <div className="mt-5 flex">
+                                        {login
+                                            ? "Don’t have an account yet?"
+                                            : "have an account yet?"}
+
+                                        <p
+                                            className="text-[blue] hover:cursor-pointer"
+                                            onClick={handleToggleLogIn}
                                         >
-                                            Đăng nhập
-                                        </Button>
+                                            {login
+                                                ? " (Sign up here)"
+                                                : " (Log in here)"}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
