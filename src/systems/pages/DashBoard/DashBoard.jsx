@@ -18,7 +18,10 @@ export default function DashBoard() {
                 <Col span={19}>
                     <Routes>
                         <Route path={RouterDTO.book} element={<CreateBook />} />
-                        <Route path="/cate/*" element={<Categories />}></Route>
+                        <Route
+                            path={RouterDTO.cate.manageCate}
+                            element={<Categories />}
+                        ></Route>
                     </Routes>
                 </Col>
             </Row>

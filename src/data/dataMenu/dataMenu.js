@@ -1,5 +1,5 @@
-export const childrenList = [["Trang Chủ"], ["CreateBooks"]];
+export const childrenList = [["Trang Chủ"]];
 
-export const urlchildrenList = [["/dashboard"], ["/create-books"]];
+export const urlchildrenList = [["/dashboard"]];
 
-export const sideBarList = ["Dashboard", "Books"];
+export const sideBarList = ["Dashboard"];
