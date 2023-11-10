@@ -1,15 +1,14 @@
+import { FileDoneOutlined, PieChartOutlined } from "@ant-design/icons";
+import { Menu } from "antd";
 import React from "react";
-
-import { PieChartOutlined, BookOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 import {
     childrenList,
     sideBarList,
     urlchildrenList,
 } from "../../../data/dataMenu/dataMenu";
-import { Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const items = [PieChartOutlined, BookOutlined].map((icon, index) => {
+const items = [PieChartOutlined, FileDoneOutlined].map((icon, index) => {
     const key = index;
     return {
         key: `sub${key}`,
@@ -23,27 +22,27 @@ const items = [PieChartOutlined, BookOutlined].map((icon, index) => {
             })),
     };
 });
-export default function Sidebar() {
+
+const MenuSideBar = () => {
     const router = useNavigate();
+
     const onClick = (e) => {
-        router(e.key);
+        router.push(e.key);
     };
+
     return (
-        <div className="sidebar shadow w-[256px] h-[calc(100%-56px)]">
+        <>
             <Menu
                 onClick={onClick}
-                style={{
-                    width: "256px",
-                    fontWeight: 700,
-                    color: "#999999",
-                    fontSize: "14px",
-                }}
+                style={{ width: 256 }}
                 defaultSelectedKeys={["1"]}
-                defaultOpenKeys={["sub1"]}
+                defaultOpenKeys={["sub0", "sub1"]}
                 mode="inline"
                 items={items}
-                className="menu "
-            ></Menu>
-        </div>
+                className="customize-menu-antd"
+            />
+        </>
     );
-}
+};
+
+export default MenuSideBar;
