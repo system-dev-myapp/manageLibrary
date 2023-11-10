@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PieChartOutlined } from "@ant-design/icons";
+import { PieChartOutlined, BookOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
     childrenList,
@@ -9,7 +9,7 @@ import {
 } from "../../../data/dataMenu/dataMenu";
 import { Menu } from "antd";
 
-const items = [PieChartOutlined].map((icon, index) => {
+const items = [PieChartOutlined, BookOutlined].map((icon, index) => {
     const key = index;
     return {
         key: `sub${key}`,
