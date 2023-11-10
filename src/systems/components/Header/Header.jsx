@@ -3,7 +3,7 @@ import SearchBook from "./components/Search/Search";
 
 export default function Header() {
     return (
-        <div className="header-wp px-3 flex h-[56px] shadow-md ">
+        <div className="header-wp px-3 flex h-[56px] shadow-md fixed top-0 right-0 left-0 z-[999] bg-[#fff]">
             <div className="left flex flex-none m-[10px]">
                 <img
                     className="logo-web mr-[5px]"
