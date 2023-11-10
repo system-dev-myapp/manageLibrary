@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { RouterDTO } from "../utils/routers.dto";
 import Auth from "../systems/auth/Auth";
 import PrivateRouter from "../components/PrivateRouter/PrivateRouter";
-import Home from "../systems/pages/home/home";
+import DashBoard from "../systems/pages/DashBoard/DashBoard";
 
 export default function RouterComponent() {
     return (
@@ -12,7 +12,7 @@ export default function RouterComponent() {
                 <Route
                     element={
                         <PrivateRouter>
-                            <Home />
+                            <DashBoard />
                         </PrivateRouter>
                     }
                     path={RouterDTO.dashboard}

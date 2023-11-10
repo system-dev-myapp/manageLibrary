@@ -1,5 +1,5 @@
 import React from "react";
-import { RouterDTO } from "../../../utils/routers.dto";
+import { RouterDTO } from "../../../../utils/routers.dto";
 import CreateCategories from "./manageCate/CreateCategories/CreateCategories";
 import AllCategories from "./manageCate/AllCategories/AllCategories";
 import { useLocation, useNavigate } from "react-router";
