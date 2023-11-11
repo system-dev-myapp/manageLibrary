@@ -9,6 +9,5 @@ export const useDebounce = (value, time) => {
         }, time);
         return () => clearTimeout(id);
     }, [value, time]);
-    console.log(text);
     return text.trim();
 };
