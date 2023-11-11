@@ -3,21 +3,28 @@ import ReactSelect from "react-select";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { Col, Row, Select } from "antd";
+import { Col, Image, Row, Select } from "antd";
 import { dataCategories } from "../../../../data/dataCategories/dateCategories";
+import PreviewListImage from "./slickImages/slickImages";
+import handleValidateImage from "../../../../helpers/validateImageFile";
 
 export default function CreateBook() {
     const [title, setTitle] = useState("");
-    const [state, setState] = useState({
+    const [markdown, setMarkdown] = useState({
         text: "",
         html: "",
     });
     const [cate, setCate] = useState("");
-    const [active, setActive] = useState("");
+    const [active, setActive] = useState(dataCategories[0].value);
     const [number, setNumber] = useState("");
+    const [thumbnail, setThumbnail] = useState(null);
+    const [thumbnailPreview, setThumbnailPreview] = useState("");
+    const [listImage, setListImage] = useState(null);
+
+    const refInputThumbnail = useRef(null);
 
     function handleEditorChange({ html, text }) {
-        setState({ html: html, text: text });
+        setMarkdown({ html: html, text: text });
     }
 
     const options = [
@@ -36,11 +43,12 @@ export default function CreateBook() {
 
         let dataBuilder = {
             title: title,
-            description: state.html,
-            description_markdown: state.text,
+            description: markdown.html,
+            description_markdown: markdown.text,
             stock: number,
             is_active: active === "active" ? true : false,
             categories: cate,
+            images: thumbnail,
         };
         try {
             // ghep api
@@ -49,44 +57,75 @@ export default function CreateBook() {
         }
     }
 
+    const handleChooseThumbnailFile = () => {
+        const input = refInputThumbnail.current;
+
+        if (input) {
+            input.click();
+        }
+    };
+
+    const handleChangeFileThumbnail = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setThumbnailPreview(URL.createObjectURL(file));
+            setThumbnail(file);
+        }
+    };
+
+    const chooseListImageFile = (e) => {
+        const files = e.target.files;
+        if (files && files.length) {
+            const ImageFiles = [];
+            Array.from(files).map((item) => {
+                if (handleValidateImage(item)) {
+                    ImageFiles.push(item);
+                }
+            });
+            setListImage(ImageFiles);
+        }
+    };
+
     return (
-        <>
+        <div className="bg-[#fff] px-4 py-6 mt-4 mb-6 shadow-sm rounded-[10px]">
             <h2 className="flex justify-center py-[20px] font-[600]">
                 Create Book
             </h2>
-            <div className="flex">
-                <p className="flex items-center text-[14px]">Nhập tên sách:</p>
-                <input
-                    className="border rounded-md w-[75%] h-[40px] ml-[42.5px]"
-                    placeholder="   Vui lòng nhập tên sách!!!"
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
-            </div>
-            <div className="flex  mt-[20px]">
-                <p className="flex items-center text-[14px] mr-[10px]">
-                    Chọn danh mục sách:
-                </p>
-                <ReactSelect
-                    value={cate}
-                    onChange={(e) => setCate(e)}
-                    isMulti
-                    options={options}
-                    className="w-[75%]"
-                />
-            </div>
-            {/* <div className="pt-[10px] mb-[50px] flex ">
-                <div>
-                    <SlickImages />
-                </div>
-            </div> */}
-            <Row className="my-[20px]">
+            <Row gutter={16}>
+                <Col sm={12}>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                        Nhập Tên Sách Của Bạn
+                    </label>
+                    <input
+                        className="w-full h-[35px] border rounded-[6px] outline-none pl-4"
+                        placeholder="Vui lòng nhập tên sách...."
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+                </Col>
+                <Col sm={12}>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                        Chọn Danh Mục Sách
+                    </label>
+                    <ReactSelect
+                        placeholder="Bạn hãy chọn danh mục sách (có thể chọn nhiều)"
+                        value={cate}
+                        onChange={(e) => setCate(e)}
+                        isMulti
+                        options={options}
+                        className="w-full"
+                    />
+                </Col>
+            </Row>
+            <Row className="my-[20px]" gutter={16}>
                 <Col span={12}>
-                    <div className="status flex items-center">
-                        <p>Trạng thái:</p>
+                    <div className="status">
+                        <label className="block mb-2 text-sm font-medium text-gray-900">
+                            Chọn Trạng Thái
+                        </label>
                         <Select
-                            className="select w-[80%] ml-[10px] h-[35px]"
+                            className="select w-full h-[35px] rounded-[6px]"
                             options={dataCategories}
                             placeholder="Chọn trạng thái"
                             value={active}
@@ -95,10 +134,12 @@ export default function CreateBook() {
                     </div>
                 </Col>
                 <Col span={12}>
-                    <div className="flex items-center">
-                        <p>Số lượng sách:</p>
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-900">
+                            Nhập số lượng sách
+                        </label>
                         <input
-                            className="border rounded-md w-[80%] ml-[10px] h-[35px]"
+                            className="pl-4 w-full h-[35px] border rounded-[6px] outline-none"
                             value={number}
                             placeholder="  Nhập số lượng sách"
                             onChange={(e) => setNumber(e.target.value)}
@@ -107,20 +148,82 @@ export default function CreateBook() {
                     </div>
                 </Col>
             </Row>
-            <MdEditor
-                className="mt-[20px]"
-                style={{ height: "500px" }}
-                renderHTML={(text) => mdParser.render(text)}
-                onChange={handleEditorChange}
-            />
+            <div className="choose-images">
+                <Row gutter={16}>
+                    <Col sm={12}>
+                        <label className="block mt-[10px] mb-[6px] text-sm font-medium text-gray-900">
+                            Chọn Ảnh Thumbnail Sách
+                        </label>
+                        <div className="overflow-hidden shadow-sm h-[200px] border-[1px] border-solid border-[#ccc] rounded-[10px] bg-[#faf3f3] relative">
+                            <input
+                                onChange={handleChangeFileThumbnail}
+                                ref={refInputThumbnail}
+                                type="file"
+                                accept="image/png, image/gif, image/jpeg"
+                                hidden
+                            />
+                            <Image
+                                src={thumbnailPreview}
+                                style={{
+                                    display: `${
+                                        thumbnailPreview ? "block" : "none"
+                                    }`,
+                                }}
+                                className="cursor-pointer absolute h-100-imp top-0 left-0 right-0 bottom-0 z-[1] w-[100%] h-[100%] object-cover"
+                                alt="Hinh Anh"
+                            />
+                            <button
+                                onClick={handleChooseThumbnailFile}
+                                className="z-[2] absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] hover:text-[#ee4d2d]"
+                            >
+                                <span className="text-[30px]">
+                                    <i className="bi bi-upload"></i>
+                                </span>
+                                <p className="font-[600]">Chọn Ảnh Thumbnail</p>
+                            </button>
+                        </div>
+                    </Col>
+                    <Col sm={12}>
+                        <PreviewListImage data={listImage} />
+                        <div className="mt-[10px]">
+                            <label
+                                htmlFor="file-input"
+                                className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                                Chọn Thêm Ảnh
+                            </label>
+                            <input
+                                onChange={chooseListImageFile}
+                                type="file"
+                                name="file-input"
+                                id="file-input"
+                                multiple
+                                accept="image/png, image/gif, image/jpeg"
+                                className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600   file:bg-gray-50 file:border-0 file:me-4  file:py-3 file:px-4 dark:file:bg-gray-700 dark:file:text-gray-400"
+                            />
+                        </div>
+                    </Col>
+                </Row>
+            </div>
+            <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-900">
+                    Nhập Mô Tả Sách
+                </label>
+                <MdEditor
+                    className="mt-[10px]"
+                    style={{ height: "500px" }}
+                    renderHTML={(text) => mdParser.render(text)}
+                    onChange={handleEditorChange}
+                />
+            </div>
             <div className="flex justify-end mr-1">
                 <button
                     onClick={handleSubmid}
-                    className="bg-[#508bf3] p-2 border rounded-md my-[20px] "
+                    className="bg-[#508bf3] p-2 border rounded-md my-[20px] text-[#fff]"
                 >
-                    Create
+                    Tạo Sách
                 </button>
             </div>
-        </>
+        </div>
     );
 }

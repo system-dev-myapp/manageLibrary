@@ -1,10 +1,14 @@
 export const dataCategories = [
     {
-        value: "unactive",
-        label: "true",
+        value: "null",
+        label: "Chọn Trạng Thái",
     },
     {
         value: "active",
-        label: "false",
+        label: "Hiển Thị",
+    },
+    {
+        value: "unactive",
+        label: "Ẩn",
     },
 ];

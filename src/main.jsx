@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./systems/App";
 import { BrowserRouter } from "react-router-dom";
 import "./globalStyle/globalStyle.css";
+import "./globalStyle/custom.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
