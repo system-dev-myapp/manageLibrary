@@ -4,10 +4,7 @@ import { Button, Card, Modal } from "antd";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import ModalUpdateMarkDown from "./ModalShowContent/ModalShowContent";
-import ModalShowContent from "./ModalShowContent/ModalShowContent";
 import Swal from "sweetalert2";
-import { async } from "@firebase/util";
 import { HandleApi } from "../../../../../../../services/handleApi";
 import { UpdateCateService } from "../../../../../../../services/cateService";
 import { useDispatch } from "react-redux";
@@ -128,10 +125,12 @@ export default function CardItem({ cate }) {
     };
 
     return (
-        <div className="h-[100%] w-full border-[#ccc] rounded-md border-2">
+        <div className="h-[100%] w-full">
             <Card
                 hoverable
-                className={`h-full rounded-md relative overflow-hidden`}
+                className={`h-full rounded-md relative shadow-sm ${
+                    isUpdate ? "overflow-hidden " : ""
+                }`}
             >
                 <div
                     className={`${
@@ -149,7 +148,7 @@ export default function CardItem({ cate }) {
                     ></div>
                 </div>
                 <div className="relative z-[99]">
-                    <div className="border-b-2 border-[#ccc] pb-3">
+                    <div className="border-b-[1px] border-solid border-[#ccc] pb-3">
                         {isUpdate ? (
                             <div className="">
                                 <input
@@ -167,8 +166,8 @@ export default function CardItem({ cate }) {
                                     value={active}
                                 >
                                     {/* <option value="null">Chọn trạng thái</option> */}
-                                    <option value="active">Hiện</option>
-                                    <option value="unactive">Ẩn</option>
+                                    <option value="active">Hiện Thị</option>
+                                    <option value="unactive">Đang Bị Ẩn</option>
                                 </select>
                             </div>
                         ) : (

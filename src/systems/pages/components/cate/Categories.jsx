@@ -32,7 +32,6 @@ export default function Categories() {
                 defaultActiveKey={RouterDTO.cate.createCate}
                 items={cate}
                 onChange={onChange}
-                // indicatorSize={(origin) => origin - 16}
             />
         </div>
     );
