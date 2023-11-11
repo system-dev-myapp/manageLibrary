@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import ModalExplain from "./ModalExplain/ModalExplain";
+import ModalExplain from "../../../Book/ManageBook/CreateBook/ModalExplain/ModalExplain";
 import { Button, Col, Divider, Row, Typography } from "antd";
 import Swal from "sweetalert2";
-import { async } from "@firebase/util";
 import { HandleApi } from "../../../../../../services/handleApi";
 import { createCategoriesService } from "../../../../../../services/cateService";
 
@@ -134,12 +133,6 @@ export default function CreateCategories() {
                         </select>
                     </div>
                 </Col>
-                {/* <Col span={12} className="pl-10">
-                    <div className="mt-10 text-base flex border-y-2 border-[#ccc] py-5 w-[90%] font-semibold">
-                        Bạn chưa biết về danh mục sách ?
-                        <ModalExplain />
-                    </div>
-                </Col> */}
             </Row>
 
             <div className="mt-10">
