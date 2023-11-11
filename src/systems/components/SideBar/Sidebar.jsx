@@ -27,7 +27,7 @@ const MenuSideBar = () => {
     const router = useNavigate();
 
     const onClick = (e) => {
-        router.push(e.key);
+        router(e.key);
     };
 
     return (
