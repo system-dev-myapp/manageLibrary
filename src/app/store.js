@@ -4,6 +4,7 @@ import persistReducer from "redux-persist/es/persistReducer";
 import thunk from "redux-thunk";
 import persistStore from "redux-persist/es/persistStore";
 import authSlice from "../features/auth/AuthSlice";
+import cateSlice from "../features/cate/CateSlice";
 
 const persistConfig = {
     key: "root",
@@ -15,6 +16,7 @@ const authPersist = persistReducer(persistConfig, authSlice);
 export const store = configureStore({
     reducer: {
         authSlice: authPersist,
+        cateSlice: cateSlice,
     },
     middleware: [thunk],
 });

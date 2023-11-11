@@ -1,7 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @import 'react-markdown-editor-lite/lib/index.css'; */
 
 .ant-btn-primary {
     background-color: #1677ff !important;
 }
+

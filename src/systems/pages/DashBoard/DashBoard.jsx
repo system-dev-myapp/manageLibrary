@@ -18,16 +18,18 @@ export default function DashBoard() {
                         </div>
                     </div>
                     <div className="px-5 flex-shrink-0 w-[calc(100%_-_256px)] h-full overflow-x-auto bg-[#f6f6f6] text-[#333]">
-                        <Routes>
-                            <Route
-                                path={RouterDTO.book}
-                                element={<CreateBook />}
-                            />
-                            <Route
-                                path="/cate/*"
-                                element={<Categories />}
-                            ></Route>
-                        </Routes>
+                        <div className="rounded bg-[#fff] p-5 mt-5">
+                            <Routes>
+                                <Route
+                                    path={RouterDTO.book}
+                                    element={<CreateBook />}
+                                />
+                                <Route
+                                    path={RouterDTO.cate.manageCate}
+                                    element={<Categories />}
+                                ></Route>
+                            </Routes>
+                        </div>
                     </div>
                 </div>
             </div>
