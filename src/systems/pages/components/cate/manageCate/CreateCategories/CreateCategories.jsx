@@ -5,7 +5,6 @@ import "react-markdown-editor-lite/lib/index.css";
 import ModalExplain from "./ModalExplain/ModalExplain";
 import { Button, Col, Row } from "antd";
 import Swal from "sweetalert2";
-import { async } from "@firebase/util";
 import { HandleApi } from "../../../../../../services/handleApi";
 import { createCategoriesService } from "../../../../../../services/cateService";
 
@@ -112,7 +111,7 @@ export default function CreateCategories() {
                     </div>
                 </Col>
                 <Col span={12} className="pl-10">
-                    <div className="mt-10 text-base flex border-y-2 border-[#ccc] py-5 w-[90%] font-semibold">
+                    <div className="mt-[10%] text-base flex py-3 pl-5 w-[90%] font-semibold border-[1px] border-[#ccc] rounded-lg">
                         Bạn chưa biết về danh mục sách ?
                         <ModalExplain />
                     </div>
