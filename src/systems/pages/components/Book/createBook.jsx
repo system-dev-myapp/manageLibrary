@@ -7,6 +7,9 @@ import { Col, Image, Row, Select } from "antd";
 import { dataCategories } from "../../../../data/dataCategories/dateCategories";
 import PreviewListImage from "./slickImages/slickImages";
 import handleValidateImage from "../../../../helpers/validateImageFile";
+import { HandleApi } from "../../../../services/handleApi";
+import { createBookService } from "../../../../services/bookService";
+import Swal from "sweetalert2";
 
 export default function CreateBook() {
     const [title, setTitle] = useState("");
@@ -20,6 +23,7 @@ export default function CreateBook() {
     const [thumbnail, setThumbnail] = useState(null);
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [listImage, setListImage] = useState(null);
+    const [textMeta, setTextMeta] = useState("");
 
     const refInputThumbnail = useRef(null);
 
@@ -49,9 +53,28 @@ export default function CreateBook() {
             is_active: active === "active" ? true : false,
             categories: cate,
             images: thumbnail,
+            meta_description: textMeta,
         };
         try {
-            // ghep api
+            const Res = await HandleApi(createBookService, dataBuilder);
+            if (Res) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Thành Công!",
+                });
+                setCate("");
+                setTitle("");
+                setMarkdown({
+                    text: "",
+                    html: "",
+                });
+                setActive("");
+                setNumber("");
+                setThumbnail(null);
+                setThumbnailPreview(null);
+                setListImage(null);
+                setTextMeta("");
+            }
         } catch (error) {
             console.log(error);
         }
