@@ -1,6 +1,6 @@
 export const childrenList = [
     ["Trang Chủ"],
-    ["Quản lí danh mục", "CreateBooks"],
+    ["Quản lí danh mục", "Quản lí sách"],
 ];
 
 export const urlchildrenList = [

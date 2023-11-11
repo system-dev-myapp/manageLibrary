@@ -4,7 +4,8 @@ import { RouterDTO } from "../../../utils/routers.dto";
 import { Route, Routes } from "react-router";
 import Categories from "../components/cate/Categories";
 import MenuSideBar from "../../components/SideBar/Sidebar";
-import CreateBook from "../components/Book/createBook";
+import CreateBook from "../components/Book/ManageBook/CreateBook/createBook";
+import Book from "../components/Book/Book";
 
 export default function DashBoard() {
     return (
@@ -21,8 +22,8 @@ export default function DashBoard() {
                         <div className="rounded bg-[#fff] p-5 mt-5">
                             <Routes>
                                 <Route
-                                    path={RouterDTO.book}
-                                    element={<CreateBook />}
+                                    path={RouterDTO.book.manageBook}
+                                    element={<Book />}
                                 />
                                 <Route
                                     path={RouterDTO.cate.manageCate}

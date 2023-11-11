@@ -4,12 +4,14 @@ import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { Col, Image, Row, Select } from "antd";
-import { dataCategories } from "../../../../data/dataCategories/dateCategories";
+import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
 import PreviewListImage from "./slickImages/slickImages";
-import handleValidateImage from "../../../../helpers/validateImageFile";
-import ModalExplain from "../cate/manageCate/CreateCategories/ModalExplain/ModalExplain";
+import handleValidateImage from "../../../../../../helpers/validateImageFile";
+import ModalExplain from "./ModalExplain/ModalExplain";
+import { Input } from "antd";
 
 export default function CreateBook() {
+    const { TextArea } = Input;
     const [title, setTitle] = useState("");
     const [markdown, setMarkdown] = useState({
         text: "",
@@ -149,6 +151,20 @@ export default function CreateBook() {
                     </div>
                 </Col>
             </Row>
+
+            <Row>
+                <Col span={24}>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                        meta description
+                    </label>
+                    <TextArea
+                        className="border-[1px] w-[100%]"
+                        placeholder="textarea with clear icon"
+                        allowClear
+                    />
+                </Col>
+            </Row>
+
             <div className="choose-images">
                 <Row gutter={16}>
                     <Col sm={12}>
@@ -203,7 +219,7 @@ export default function CreateBook() {
                                 className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600   file:bg-gray-50 file:border-0 file:me-4  file:py-3 file:px-4 dark:file:bg-gray-700 dark:file:text-gray-400"
                             />
                         </div>
-                        <div className="mt-[10%] text-base flex py-3 pl-5 w-[90%] font-semibold border-[1px] border-[#ccc] rounded-lg">
+                        <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
                             Bạn chưa biết về danh mục sách ?
                             <ModalExplain />
                         </div>
