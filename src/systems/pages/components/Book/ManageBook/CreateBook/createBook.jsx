@@ -3,7 +3,7 @@ import ReactSelect from "react-select";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { Col, Image, Input, Row, Select } from "antd";
+import { Button, Col, Image, Input, Row, Select } from "antd";
 import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
 import { createBookService } from "../../../../../../services/bookService";
 import PreviewListImage from "./slickImages/slickImages";
@@ -317,13 +317,14 @@ export default function CreateBook() {
                 />
             </div>
             <div className="flex justify-end mr-1">
-                <button
+                <Button
                     onClick={handleSubmid}
-                    className="bg-[#508bf3] p-2 border rounded-md my-[20px] text-[#fff]"
-                    disabled={isLoading}
+                    type="primary"
+                    className="mt-[10px]"
+                    loading={isLoading}
                 >
                     Tạo Sách
-                </button>
+                </Button>
             </div>
         </div>
     );
