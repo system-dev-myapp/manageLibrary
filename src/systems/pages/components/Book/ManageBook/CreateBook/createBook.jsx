@@ -3,15 +3,14 @@ import ReactSelect from "react-select";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { Col, Image, Row, Select } from "antd";
+import { Col, Image, Input, Row, Select } from "antd";
 import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
-import PreviewListImage from "./slickImages/slickImages";
-import handleValidateImage from "../../../../helpers/validateImageFile";
-import { HandleApi } from "../../../../services/handleApi";
-import { createBookService } from "../../../../services/bookService";
+import { createBookService } from "../../../../../../services/bookService";
+import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
-import ModalExplain from "./ModalExplain/ModalExplain";
-import { Input } from "antd";
+import handleValidateImage from "../../../../../../helpers/validateImageFile";
+import PreviewListImage from "../CreateBook/slickImages/slickImages";
+import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
 
 export default function CreateBook() {
     const { TextArea } = Input;
@@ -27,6 +26,7 @@ export default function CreateBook() {
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [listImage, setListImage] = useState(null);
     const [textMeta, setTextMeta] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const refInputThumbnail = useRef(null);
 
@@ -59,6 +59,7 @@ export default function CreateBook() {
             meta_description: textMeta,
         };
         try {
+            setIsLoading(true);
             const Res = await HandleApi(createBookService, dataBuilder);
             if (Res) {
                 Swal.fire({
@@ -79,7 +80,13 @@ export default function CreateBook() {
                 setTextMeta("");
             }
         } catch (error) {
-            console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Có Lỗi Xảy Ra Vui Lòng Thử Lại Sau!",
+                footer: '<a href="https://fstack.com.vn/">Tại sao tôi gặp vấn đề này?</a>',
+            });
+            setIsLoading(false);
         }
     }
 
@@ -184,6 +191,8 @@ export default function CreateBook() {
                         className="border-[1px] w-[100%]"
                         placeholder="textarea with clear icon"
                         allowClear
+                        value={textMeta}
+                        onChange={(e) => setTextMeta(e.target.value)}
                     />
                 </Col>
             </Row>
@@ -264,6 +273,7 @@ export default function CreateBook() {
                 <button
                     onClick={handleSubmid}
                     className="bg-[#508bf3] p-2 border rounded-md my-[20px] text-[#fff]"
+                    disabled={isLoading}
                 >
                     Tạo Sách
                 </button>
