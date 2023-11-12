@@ -309,6 +309,7 @@ export default function CreateBook() {
                     Nhập Mô Tả Sách
                 </label>
                 <MdEditor
+                    value={markdown.text}
                     className="mt-[10px]"
                     style={{ height: "500px" }}
                     onImageUpload={handleUploadImageMarkdown}
