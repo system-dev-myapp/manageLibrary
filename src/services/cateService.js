@@ -17,3 +17,7 @@ export function UpdateCateService(data) {
         withCredentials: true,
     });
 }
+
+export function getAllOptionsCateService() {
+    return axios.get("/cate/filter-all");
+}
