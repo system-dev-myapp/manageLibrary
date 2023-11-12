@@ -40,7 +40,6 @@ export default function CreateBook() {
     ];
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
-
     async function handleSubmid() {
         if (!title || !cate || !active || !number || !markdown) {
             alert("Vui lòng điền đầy đủ thông tin");
