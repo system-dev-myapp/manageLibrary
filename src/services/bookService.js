@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from "../axios";
 
 export function createBookService(data) {
-    return axios.post("https://lib.fstack.com.vn/api/v1/book", data, {
+    return axios.post("/book", data, {
         withCredentials: true,
         headers: {
             "Content-Type": "multipart/form-data",

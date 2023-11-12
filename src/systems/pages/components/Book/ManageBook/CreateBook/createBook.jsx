@@ -23,15 +23,14 @@ export default function CreateBook() {
         text: "",
         html: "",
     });
-    const [cate, setCate] = useState("");
+    const [cate, setCate] = useState([]);
     const [active, setActive] = useState(dataCategories[0].value);
-    const [number, setNumber] = useState("");
-    const [thumbnail, setThumbnail] = useState(null);
+    const [number, setNumber] = useState(0);
+    const [thumbnail, setThumbnail] = useState([]);
     const [thumbnailPreview, setThumbnailPreview] = useState("");
-    const [listImage, setListImage] = useState(null);
+    const [listImage, setListImage] = useState([]);
     const [textMeta, setTextMeta] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
     const [option, setOption] = useState([]);
 
     const refInputThumbnail = useRef(null);
@@ -56,9 +55,70 @@ export default function CreateBook() {
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
+    const handleChooseThumbnailFile = () => {
+        const input = refInputThumbnail.current;
+        if (input) {
+            input.click();
+        }
+    };
+
+    const handleChangeFileThumbnail = (e) => {
+        const file = e.target.files[0];
+
+        if (handleValidateImage(file)) {
+            setThumbnailPreview(URL.createObjectURL(file));
+            setThumbnail((prev) => [...prev, file]);
+        }
+    };
+
+    const chooseListImageFile = (e) => {
+        const files = e.target.files;
+        let ImageFiles = [];
+        if (files && files.length) {
+            Array.from(files).map((item) => {
+                if (handleValidateImage(item)) {
+                    ImageFiles.push(item);
+                }
+            });
+            setListImage(ImageFiles);
+        }
+    };
+
+    const handleValidate = () => {
+        let isValid = true;
+        const arrClone = [
+            title,
+            markdown.html,
+            markdown.text,
+            number,
+            active,
+            cate,
+            thumbnail,
+            listImage,
+            textMeta,
+        ];
+        for (let i = 0; i < arrClone.length; i++) {
+            if (!arrClone[i]) {
+                isValid = false;
+                Swal.fire({
+                    icon: "error",
+                    title: " Bạn vui lòng không để trống các trường !",
+                });
+                break;
+            }
+        }
+        return isValid;
+    };
+
+    const handleSelectCate = (e) => {
+        setCate(e);
+    };
+
     async function handleSubmid() {
-        if (!title || !cate || !active || !number || !markdown) {
-            alert("Vui lòng điền đầy đủ thông tin");
+        setIsLoading(true);
+        const check = handleValidate();
+        if (!check) {
+            setIsLoading(false);
             return;
         }
 
@@ -68,29 +128,28 @@ export default function CreateBook() {
             description_markdown: markdown.text,
             stock: number,
             is_active: active === "active" ? true : false,
-            categories: cate,
-            images: thumbnail,
+            categories: cate.map((item) => item.value),
+            images: [...thumbnail, ...listImage],
             meta_description: textMeta,
         };
         try {
-            setIsLoading(true);
             const Res = await HandleApi(createBookService, dataBuilder);
-            if (Res) {
+            if (Res.statusCode === HttpStatusCode.Ok) {
                 Swal.fire({
                     icon: "success",
                     title: "Thành Công!",
                 });
-                setCate("");
+                setCate([]);
                 setTitle("");
                 setMarkdown({
                     text: "",
                     html: "",
                 });
-                setActive("");
-                setNumber("");
-                setThumbnail(null);
-                setThumbnailPreview(null);
-                setListImage(null);
+                setActive(dataCategories[0].value);
+                setNumber(0);
+                setThumbnail([]);
+                setThumbnailPreview("");
+                setListImage([]);
                 setTextMeta("");
             }
         } catch (error) {
@@ -100,38 +159,9 @@ export default function CreateBook() {
                 text: "Có Lỗi Xảy Ra Vui Lòng Thử Lại Sau!",
                 footer: '<a href="https://fstack.com.vn/">Tại sao tôi gặp vấn đề này?</a>',
             });
-            setIsLoading(false);
         }
+        setIsLoading(false);
     }
-
-    const handleChooseThumbnailFile = () => {
-        const input = refInputThumbnail.current;
-
-        if (input) {
-            input.click();
-        }
-    };
-
-    const handleChangeFileThumbnail = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setThumbnailPreview(URL.createObjectURL(file));
-            setThumbnail(file);
-        }
-    };
-
-    const chooseListImageFile = (e) => {
-        const files = e.target.files;
-        if (files && files.length) {
-            const ImageFiles = [];
-            Array.from(files).map((item) => {
-                if (handleValidateImage(item)) {
-                    ImageFiles.push(item);
-                }
-            });
-            setListImage(ImageFiles);
-        }
-    };
 
     return (
         <div className="bg-[#fff] px-4 py-6 mt-4 mb-6 shadow-sm rounded-[10px]">
@@ -158,7 +188,7 @@ export default function CreateBook() {
                     <ReactSelect
                         placeholder="Bạn hãy chọn danh mục sách (có thể chọn nhiều)"
                         value={cate}
-                        onChange={(e) => setCate(e)}
+                        onChange={handleSelectCate}
                         isMulti
                         options={option}
                         className="w-full"
