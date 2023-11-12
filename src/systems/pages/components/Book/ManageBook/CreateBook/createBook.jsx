@@ -1,17 +1,20 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactSelect from "react-select";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { Col, Image, Row, Select } from "antd";
+import { Col, Image, Input, Row, Select } from "antd";
 import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
+import { createBookService } from "../../../../../../services/bookService";
 import PreviewListImage from "./slickImages/slickImages";
 import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
 import ModalExplain from "./ModalExplain/ModalExplain";
-import { Input } from "antd";
-import { createBookService } from "../../../../../../services/bookService";
+// import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
+import { getAllOptionsCateService } from "../../../../../../services/cateService";
+import { HttpStatusCode } from "axios";
+import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
 
 export default function CreateBook() {
     const { TextArea } = Input;
@@ -27,6 +30,9 @@ export default function CreateBook() {
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [listImage, setListImage] = useState(null);
     const [textMeta, setTextMeta] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [option, setOption] = useState([]);
 
     const refInputThumbnail = useRef(null);
 
@@ -34,11 +40,19 @@ export default function CreateBook() {
         setMarkdown({ html: html, text: text });
     }
 
-    const options = [
-        { value: "option1", label: "Option 1" },
-        { value: "option2", label: "Option 2" },
-        { value: "option3", label: "Option 3" },
-    ];
+    useEffect(() => {
+        const _fetch = async () => {
+            try {
+                const Res = await getAllOptionsCateService();
+                if ((Res.statusCode = HttpStatusCode.Ok)) {
+                    setOption(Res.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        _fetch();
+    }, []);
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -59,6 +73,7 @@ export default function CreateBook() {
             meta_description: textMeta,
         };
         try {
+            setIsLoading(true);
             const Res = await HandleApi(createBookService, dataBuilder);
             if (Res) {
                 Swal.fire({
@@ -79,7 +94,13 @@ export default function CreateBook() {
                 setTextMeta("");
             }
         } catch (error) {
-            console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Có Lỗi Xảy Ra Vui Lòng Thử Lại Sau!",
+                footer: '<a href="https://fstack.com.vn/">Tại sao tôi gặp vấn đề này?</a>',
+            });
+            setIsLoading(false);
         }
     }
 
@@ -139,7 +160,7 @@ export default function CreateBook() {
                         value={cate}
                         onChange={(e) => setCate(e)}
                         isMulti
-                        options={options}
+                        options={option}
                         className="w-full"
                     />
                 </Col>
@@ -184,6 +205,8 @@ export default function CreateBook() {
                         className="border-[1px] w-[100%]"
                         placeholder="textarea with clear icon"
                         allowClear
+                        value={textMeta}
+                        onChange={(e) => setTextMeta(e.target.value)}
                     />
                 </Col>
             </Row>
@@ -242,10 +265,12 @@ export default function CreateBook() {
                                 className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600   file:bg-gray-50 file:border-0 file:me-4  file:py-3 file:px-4 dark:file:bg-gray-700 dark:file:text-gray-400"
                             />
                         </div>
-                        <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
-                            Bạn chưa biết về danh mục sách ?
-                            <ModalExplain />
-                        </div>
+                        {!listImage && (
+                            <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
+                                Bạn chưa biết về danh mục sách ?
+                                <ModalExplain />
+                            </div>
+                        )}
                     </Col>
                 </Row>
             </div>
@@ -256,6 +281,7 @@ export default function CreateBook() {
                 <MdEditor
                     className="mt-[10px]"
                     style={{ height: "500px" }}
+                    onImageUpload={handleUploadImageMarkdown}
                     renderHTML={(text) => mdParser.render(text)}
                     onChange={handleEditorChange}
                 />
@@ -264,6 +290,7 @@ export default function CreateBook() {
                 <button
                     onClick={handleSubmid}
                     className="bg-[#508bf3] p-2 border rounded-md my-[20px] text-[#fff]"
+                    disabled={isLoading}
                 >
                     Tạo Sách
                 </button>
