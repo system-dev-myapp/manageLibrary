@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactSelect from "react-select";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
@@ -11,6 +11,9 @@ import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
 import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
+import { getAllOptionsCateService } from "../../../../../../services/cateService";
+import { HttpStatusCode } from "axios";
+import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
 
 export default function CreateBook() {
     const { TextArea } = Input;
@@ -28,17 +31,27 @@ export default function CreateBook() {
     const [textMeta, setTextMeta] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+    const [option, setOption] = useState([]);
+
     const refInputThumbnail = useRef(null);
 
     function handleEditorChange({ html, text }) {
         setMarkdown({ html: html, text: text });
     }
 
-    const options = [
-        { value: "option1", label: "Option 1" },
-        { value: "option2", label: "Option 2" },
-        { value: "option3", label: "Option 3" },
-    ];
+    useEffect(() => {
+        const _fetch = async () => {
+            try {
+                const Res = await getAllOptionsCateService();
+                if ((Res.statusCode = HttpStatusCode.Ok)) {
+                    setOption(Res.data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        _fetch();
+    }, []);
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -146,7 +159,7 @@ export default function CreateBook() {
                         value={cate}
                         onChange={(e) => setCate(e)}
                         isMulti
-                        options={options}
+                        options={option}
                         className="w-full"
                     />
                 </Col>
@@ -251,10 +264,12 @@ export default function CreateBook() {
                                 className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600   file:bg-gray-50 file:border-0 file:me-4  file:py-3 file:px-4 dark:file:bg-gray-700 dark:file:text-gray-400"
                             />
                         </div>
-                        <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
-                            Bạn chưa biết về danh mục sách ?
-                            <ModalExplain />
-                        </div>
+                        {!listImage && (
+                            <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
+                                Bạn chưa biết về danh mục sách ?
+                                <ModalExplain />
+                            </div>
+                        )}
                     </Col>
                 </Row>
             </div>
@@ -265,6 +280,7 @@ export default function CreateBook() {
                 <MdEditor
                     className="mt-[10px]"
                     style={{ height: "500px" }}
+                    onImageUpload={handleUploadImageMarkdown}
                     renderHTML={(text) => mdParser.render(text)}
                     onChange={handleEditorChange}
                 />
