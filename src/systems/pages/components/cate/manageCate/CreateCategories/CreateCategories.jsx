@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
-import "react-markdown-editor-lite/lib/index.css";
-import ModalExplain from "../../../Book/ManageBook/CreateBook/ModalExplain/ModalExplain";
 import { Button, Col, Divider, Row, Typography } from "antd";
 import Swal from "sweetalert2";
 import { HandleApi } from "../../../../../../services/handleApi";
 import { createCategoriesService } from "../../../../../../services/cateService";
+import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
 
 const { Paragraph } = Typography;
+const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export default function CreateCategories() {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +18,6 @@ export default function CreateCategories() {
         html: "",
         text: "",
     });
-
-    const mdParser = new MarkdownIt(/* Markdown-it options */);
 
     function handleEditorChange({ html, text }) {
         setDesc({ html: html, text: text });
@@ -134,19 +132,18 @@ export default function CreateCategories() {
                     </div>
                 </Col>
             </Row>
-
             <div className="mt-10">
                 <label className="block mb-2 text-sm font-medium text-gray-900">
                     Nhập Tên Sách Của Bạn
                 </label>
                 <MdEditor
+                    onImageUpload={handleUploadImageMarkdown}
                     value={desc.text}
                     style={{ height: "500px" }}
                     renderHTML={(text) => mdParser.render(text)}
                     onChange={handleEditorChange}
                 />
             </div>
-
             <div className="w-full flex flex-row-reverse mt-6">
                 <div className="w-[100%]">
                     <Button

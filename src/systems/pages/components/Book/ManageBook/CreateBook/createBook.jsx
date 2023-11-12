@@ -6,10 +6,10 @@ import "react-markdown-editor-lite/lib/index.css";
 import { Col, Image, Input, Row, Select } from "antd";
 import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
 import { createBookService } from "../../../../../../services/bookService";
+import PreviewListImage from "./slickImages/slickImages";
+import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
-import handleValidateImage from "../../../../../../helpers/validateImageFile";
-import PreviewListImage from "../CreateBook/slickImages/slickImages";
 import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
 
 export default function CreateBook() {

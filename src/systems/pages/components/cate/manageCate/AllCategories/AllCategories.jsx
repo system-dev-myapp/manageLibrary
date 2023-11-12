@@ -50,13 +50,15 @@ export default function AllCategories() {
                         );
                     })}
             </Row>
-            <Pagination
-                className="my-5"
-                style={{ paddingLeft: "35%" }}
-                defaultCurrent={1}
-                total={50}
-                onChange={handleChangePagination}
-            />
+            {meta && meta.currentPage <= meta.totalPages && (
+                <Pagination
+                    className="my-5"
+                    style={{ paddingLeft: "35%" }}
+                    defaultCurrent={1}
+                    total={meta.totalItems}
+                    onChange={handleChangePagination}
+                />
+            )}
         </div>
     );
 }
