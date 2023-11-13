@@ -233,7 +233,7 @@ export default function CreateBook() {
                     </label>
                     <TextArea
                         className="border-[1px] w-[100%]"
-                        placeholder="textarea with clear icon"
+                        placeholder="Nhập Meta Description cho sách (Tối đa 150 kí tự)"
                         allowClear
                         value={textMeta}
                         onChange={(e) => setTextMeta(e.target.value)}
