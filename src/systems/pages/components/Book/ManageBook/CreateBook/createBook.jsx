@@ -11,7 +11,6 @@ import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
 import ModalExplain from "./ModalExplain/ModalExplain";
-// import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
 import { getAllOptionsCateService } from "../../../../../../services/cateService";
 import { HttpStatusCode } from "axios";
 import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
