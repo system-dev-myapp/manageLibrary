@@ -8,6 +8,7 @@ import { getAllUserService } from "../../../../services/userService";
 import handleUploadImageMarkdown from "../../../../helpers/handleUploadImageMarkdown";
 import Swal from "sweetalert2";
 import SendNotification from "./SendNotification/SendNotification";
+import SendNotificationAll from "./SendNotificationAll/SendNotificationAll";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -100,7 +101,7 @@ export default function AllUser() {
                         Tạo thông báo
                     </Button>
                     <Modal
-                        title="Basic Modal"
+                        title="Tạo thông báo"
                         open={isModalOpen}
                         onOk={handleOk}
                         onCancel={handleCancel}
@@ -108,7 +109,7 @@ export default function AllUser() {
                     >
                         <Button
                             type="primary"
-                            className="mb-5"
+                            className="my-5 w-[20%] ml-[80%]"
                             onClick={handleNewNotify}
                         >
                             Tạo thông báo mới
@@ -123,13 +124,12 @@ export default function AllUser() {
                     </Modal>
                 </Col>
                 <Col span={3}>
-                    <Button
-                        type="primary"
-                        onClick={showModal}
-                        className="w-full"
-                    >
-                        Send All User
-                    </Button>
+                    {allUsers && allUsers.length > 0 && (
+                        <SendNotificationAll
+                            data={allUsers}
+                            contentNotify={desc.html}
+                        />
+                    )}
                 </Col>
             </Row>
 

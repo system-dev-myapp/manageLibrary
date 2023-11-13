@@ -11,3 +11,12 @@ export function sendEmailService(data) {
         withCredentials: true,
     });
 }
+
+export function sendNotifyAllService(data) {
+    return axios.post("/user/send-email-many-users", data, {
+        withCredentials: true,
+        // headers: {
+        //     "Content-Type": "multipart/form-data",
+        // },
+    });
+}
