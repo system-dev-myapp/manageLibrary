@@ -17,3 +17,9 @@ export function UpdateBookService(data) {
         },
     });
 }
+
+export function GetAllBooksService({ page = 1, pageSize = 10 }) {
+    return axios.get(`/book?page=${page}&pageSize=${pageSize}`, {
+        withCredentials: true,
+    });
+}
