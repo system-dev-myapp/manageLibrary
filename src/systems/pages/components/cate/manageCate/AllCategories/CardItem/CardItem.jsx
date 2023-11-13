@@ -200,8 +200,6 @@ export default function CardItem({ cate }) {
                                 dangerouslySetInnerHTML={{ __html: desc.html }}
                             ></div>
                             {isUpdate ? (
-                                // <div className="absolute z-3 w-full h-full bg-[rgba(0,0,0,0.05)]">
-                                // </div>
                                 <div className="absolute z-4 w-full">
                                     <button
                                         className="mt-[50%] ml-[15%] w-[70%] bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
