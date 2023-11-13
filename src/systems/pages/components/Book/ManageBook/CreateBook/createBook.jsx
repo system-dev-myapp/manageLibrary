@@ -11,7 +11,6 @@ import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { HandleApi } from "../../../../../../services/handleApi";
 import Swal from "sweetalert2";
 import ModalExplain from "./ModalExplain/ModalExplain";
-// import ModalExplain from "../CreateBook/ModalExplain/ModalExplain";
 import { getAllOptionsCateService } from "../../../../../../services/cateService";
 import { HttpStatusCode } from "axios";
 import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
@@ -233,7 +232,7 @@ export default function CreateBook() {
                     </label>
                     <TextArea
                         className="border-[1px] w-[100%]"
-                        placeholder="textarea with clear icon"
+                        placeholder="Nhập Meta Description cho sách (Tối đa 150 kí tự)"
                         allowClear
                         value={textMeta}
                         onChange={(e) => setTextMeta(e.target.value)}
