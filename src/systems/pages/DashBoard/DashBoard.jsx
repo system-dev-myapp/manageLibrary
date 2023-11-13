@@ -6,6 +6,7 @@ import Categories from "../components/cate/Categories";
 import MenuSideBar from "../../components/SideBar/Sidebar";
 import CreateBook from "../components/Book/ManageBook/CreateBook/createBook";
 import Book from "../components/Book/Book";
+import User from "../user/User";
 
 export default function DashBoard() {
     return (
@@ -28,6 +29,10 @@ export default function DashBoard() {
                                 <Route
                                     path={RouterDTO.cate.manageCate}
                                     element={<Categories />}
+                                ></Route>
+                                <Route
+                                    path={RouterDTO.user.manageUser}
+                                    element={<User />}
                                 ></Route>
                             </Routes>
                         </div>

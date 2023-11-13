@@ -11,4 +11,8 @@ export const RouterDTO = Object.freeze({
         createCate: "/cate/createCategory",
         allCate: "/cate/allCategory",
     },
+    user: {
+        manageUser: "/user/*",
+        allUser: "/user/allUser",
+    },
 });
