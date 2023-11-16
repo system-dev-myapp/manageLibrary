@@ -8,22 +8,25 @@ import {
 } from "../../../data/dataMenu/dataMenu";
 import { useNavigate } from "react-router-dom";
 
-const items = [PieChartOutlined, FileDoneOutlined, FileDoneOutlined].map(
-    (icon, index) => {
-        const key = index;
-        return {
-            key: `sub${key}`,
-            icon: React.createElement(icon),
-            label: `${sideBarList[key]}`,
-            children:
-                childrenList[key] &&
-                childrenList[key].map((childLabel, childIndex) => ({
-                    key: urlchildrenList[key][childIndex],
-                    label: childLabel,
-                })),
-        };
-    }
-);
+const items = [
+    PieChartOutlined,
+    FileDoneOutlined,
+    FileDoneOutlined,
+    FileDoneOutlined,
+].map((icon, index) => {
+    const key = index;
+    return {
+        key: `sub${key}`,
+        icon: React.createElement(icon),
+        label: `${sideBarList[key]}`,
+        children:
+            childrenList[key] &&
+            childrenList[key].map((childLabel, childIndex) => ({
+                key: urlchildrenList[key][childIndex],
+                label: childLabel,
+            })),
+    };
+});
 
 const MenuSideBar = () => {
     const router = useNavigate();

@@ -1,6 +1,6 @@
 import React from "react";
 import AllUser from "./AllUser/AllUser";
-import { RouterDTO } from "../../../utils/routers.dto";
+import { RouterDTO } from "../../../../utils/routers.dto";
 import { useLocation, useNavigate } from "react-router";
 import { Tabs } from "antd";
 
