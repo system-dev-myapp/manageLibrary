@@ -80,8 +80,8 @@ export default function CreateBook() {
                 setCate(
                     book.categories.map((item) => {
                         return {
-                            value: item.id,
-                            label: item.title,
+                            value: item.cate.id,
+                            label: item.cate.title,
                         };
                     })
                 );
@@ -233,7 +233,7 @@ export default function CreateBook() {
             stock: number,
             is_active: active === "active" ? true : false,
             categories: cate.map((item) => item.value),
-            images: [...thumbnail, ...listImage],
+            images: [thumbnail, ...listImage],
             meta_description: metaDescription,
         };
         try {
@@ -271,6 +271,7 @@ export default function CreateBook() {
             }
         });
     };
+
     const handleCancel = () => {
         Swal.fire({
             icon: "warning",
