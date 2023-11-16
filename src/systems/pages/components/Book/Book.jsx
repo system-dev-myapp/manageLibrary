@@ -8,8 +8,8 @@ import { Tabs } from "antd";
 export default function Book() {
     const book = [
         {
-            key: RouterDTO.book.createBook,
-            label: "Tạo Sách",
+            key: RouterDTO.book.handleBook,
+            label: "Tạo sách",
             children: <CreateBook />,
         },
         {

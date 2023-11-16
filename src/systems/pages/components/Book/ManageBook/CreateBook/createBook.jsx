@@ -1,19 +1,25 @@
-import React, { useEffect, useRef, useState } from "react";
-import ReactSelect from "react-select";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Swal from "sweetalert2";
 import MarkdownIt from "markdown-it";
+import { HttpStatusCode } from "axios";
+import ReactSelect from "react-select";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
-import { Button, Col, Image, Input, Row, Select } from "antd";
-import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
-import { createBookService } from "../../../../../../services/bookService";
-import PreviewListImage from "./slickImages/slickImages";
-import handleValidateImage from "../../../../../../helpers/validateImageFile";
-import { HandleApi } from "../../../../../../services/handleApi";
-import Swal from "sweetalert2";
+import { Button, Checkbox, Col, Image, Input, Modal, Row, Select } from "antd";
 import ModalExplain from "./ModalExplain/ModalExplain";
+import PreviewListImage from "./slickImages/slickImages";
+import { useLocation } from "react-router-dom";
+import { HandleApi } from "../../../../../../services/handleApi";
+import {
+    GetBookDetailService,
+    UpdateBookService,
+    createBookService,
+} from "../../../../../../services/bookService";
+import handleValidateImage from "../../../../../../helpers/validateImageFile";
 import { getAllOptionsCateService } from "../../../../../../services/cateService";
-import { HttpStatusCode } from "axios";
+import { dataCategories } from "../../../../../../data/dataCategories/dateCategories";
 import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
+import { BASE_URL } from "../../../../../../utils/constant";
 
 export default function CreateBook() {
     const { TextArea } = Input;
@@ -28,9 +34,15 @@ export default function CreateBook() {
     const [thumbnail, setThumbnail] = useState([]);
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [listImage, setListImage] = useState([]);
-    const [textMeta, setTextMeta] = useState("");
+    const [metaDescription, setMetaDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [option, setOption] = useState([]);
+    const [listImageUpdate, setListImageUpdate] = useState([]);
+    const [bookCurrent, setBookCurrent] = useState(null);
+    const [imageDelete, setImageDelete] = useState([]);
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isChangeThumbnail, setIsChangeThumbnail] = useState(false);
 
     const refInputThumbnail = useRef(null);
 
@@ -38,23 +50,114 @@ export default function CreateBook() {
         setMarkdown({ html: html, text: text });
     }
 
-    useEffect(() => {
-        const _fetch = async () => {
-            try {
-                const Res = await getAllOptionsCateService();
-                if ((Res.statusCode = HttpStatusCode.Ok)) {
-                    setOption(Res.data);
-                }
-            } catch (error) {
-                console.log(error);
+    // get options
+
+    const _fetch = useCallback(async () => {
+        try {
+            const Res = await getAllOptionsCateService();
+            if ((Res.statusCode = HttpStatusCode.Ok)) {
+                setOption(Res.data);
             }
-        };
-        _fetch();
+        } catch (error) {
+            console.log(error);
+        }
     }, []);
+
+    // slug update
+    const loction = useLocation();
+    const slug = loction.search.slice(loction.search.search("=") + 1);
+    const _fetchGetDetail = useCallback(async () => {
+        try {
+            const Res = await HandleApi(GetBookDetailService, {
+                slug: slug,
+            });
+            if (Res.statusCode === 200) {
+                const book = Res.data;
+                setBookCurrent(book);
+                setTitle(book.title);
+                setCate(
+                    book.categories.map((item) => {
+                        return {
+                            value: item.id,
+                            label: item.title,
+                        };
+                    })
+                );
+                setActive(book.is_active ? "active" : "unactive");
+                setNumber(book.stock);
+                setMetaDescription(book.meta_description);
+                setMarkdown({
+                    text: book.description_markdown,
+                    html: book.description,
+                });
+                setThumbnailPreview(
+                    `${BASE_URL}/upload/folder/app/${book.thumbnail_url}/book`
+                );
+                setListImageUpdate(book.images);
+            }
+        } catch (err) {
+            console.log(err);
+            Swal.fire({
+                icon: "error",
+                title: "Đã xảy ra lõi bạn vui lòng thử lại sau !",
+            });
+        }
+    }, [slug]);
+
+    // reset states when you to again comoenent create
+    const handleResetInCreate = () => {
+        setTitle("");
+        setMarkdown({
+            text: "",
+            html: "",
+        });
+        setCate([]);
+        setActive(dataCategories[0].value);
+        setNumber(0);
+        setThumbnail([]);
+        setThumbnailPreview("");
+        setListImage([]);
+        setMetaDescription("");
+    };
+    //
+    useEffect(() => {
+        _fetch();
+        if (slug) {
+            setIsUpdate(true);
+            _fetchGetDetail();
+        } else {
+            handleResetInCreate();
+        }
+    }, [slug, _fetchGetDetail, _fetch]);
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-    const handleChooseThumbnailFile = () => {
+    const handleDeleteThumbnails = async () => {
+        const isDelete = await Swal.fire({
+            title: "Nếu bạn chọn ảnh thumbnail mới thì ảnh thumbnail cũ sẽ bị xóa !",
+            showDenyButton: true,
+            confirmButtonText: "OK",
+            denyButtonText: `No`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                return true;
+            } else if (result.isDenied) {
+                return false;
+            }
+        });
+        return isDelete;
+    };
+
+    const handleChooseThumbnailFile = async () => {
+        if (slug) {
+            const CheckDeleteThumbnail = await handleDeleteThumbnails();
+            if (!CheckDeleteThumbnail) {
+                return;
+            } else {
+                setIsChangeThumbnail(true);
+                setImageDelete((prev) => [...prev, bookCurrent.thumbnail_url]);
+            }
+        }
         const input = refInputThumbnail.current;
         if (input) {
             input.click();
@@ -63,10 +166,9 @@ export default function CreateBook() {
 
     const handleChangeFileThumbnail = (e) => {
         const file = e.target.files[0];
-
         if (handleValidateImage(file)) {
             setThumbnailPreview(URL.createObjectURL(file));
-            setThumbnail((prev) => [...prev, file]);
+            setThumbnail(file);
         }
     };
 
@@ -83,6 +185,12 @@ export default function CreateBook() {
         }
     };
 
+    const handleSelectCate = (e) => {
+        setCate(e);
+        console.log(e);
+    };
+
+    // validate
     const handleValidate = () => {
         let isValid = true;
         const arrClone = [
@@ -94,7 +202,7 @@ export default function CreateBook() {
             cate,
             thumbnail,
             listImage,
-            textMeta,
+            metaDescription,
         ];
         for (let i = 0; i < arrClone.length; i++) {
             if (!arrClone[i]) {
@@ -109,10 +217,7 @@ export default function CreateBook() {
         return isValid;
     };
 
-    const handleSelectCate = (e) => {
-        setCate(e);
-    };
-
+    // create book
     async function handleSubmid() {
         setIsLoading(true);
         const check = handleValidate();
@@ -129,7 +234,7 @@ export default function CreateBook() {
             is_active: active === "active" ? true : false,
             categories: cate.map((item) => item.value),
             images: [...thumbnail, ...listImage],
-            meta_description: textMeta,
+            meta_description: metaDescription,
         };
         try {
             const Res = await HandleApi(createBookService, dataBuilder);
@@ -138,18 +243,7 @@ export default function CreateBook() {
                     icon: "success",
                     title: "Thành Công!",
                 });
-                setCate([]);
-                setTitle("");
-                setMarkdown({
-                    text: "",
-                    html: "",
-                });
-                setActive(dataCategories[0].value);
-                setNumber(0);
-                setThumbnail([]);
-                setThumbnailPreview("");
-                setListImage([]);
-                setTextMeta("");
+                handleResetInCreate();
             }
         } catch (error) {
             Swal.fire({
@@ -162,10 +256,93 @@ export default function CreateBook() {
         setIsLoading(false);
     }
 
+    // modal delete image
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        Swal.fire({
+            title: "Bạn có chắc muốn xóa những ảnh đã chọn không ?",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setIsModalOpen(false);
+            }
+        });
+    };
+    const handleCancel = () => {
+        Swal.fire({
+            icon: "warning",
+            title: "Nếu bạn thoát các thay đổi sẽ không được lưu !",
+            showCancelButton: true,
+            confirmButtonText: "OK",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setIsModalOpen(false);
+            }
+        });
+    };
+
+    // update book
+    const handleDeleteImages = (image, e) => {
+        console.log(e.target.checked);
+        if (e.target.checked) {
+            setImageDelete((prev) => [...prev, image.link_url]);
+        } else {
+            const arrClone = imageDelete.filter((item) => {
+                return item !== image.link_url;
+            });
+            console.log(arrClone);
+            setImageDelete(arrClone);
+        }
+    };
+
+    const handleUpdateBook = async () => {
+        setIsLoading(true);
+        const check = handleValidate();
+        if (!check) {
+            setIsLoading(false);
+            return;
+        }
+
+        let dataBuider = {
+            title: title,
+            description: markdown.html,
+            description_markdown: markdown.text,
+            stock: number,
+            is_active: active === "active" ? true : false,
+            categories: cate.map((item) => item.value),
+            images: [...thumbnail, ...listImage],
+            id: bookCurrent.id,
+            meta_description: metaDescription,
+            is_change_thumbnail: isChangeThumbnail,
+            thumbnail_url: bookCurrent.thumbnail_url,
+            image_delete: imageDelete.length > 0 ? imageDelete : [],
+        };
+
+        try {
+            const Res = await HandleApi(UpdateBookService, dataBuider);
+            if (Res.statusCode === HttpStatusCode.OK) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Bạn đã update thành công",
+                });
+            }
+        } catch (err) {
+            console.log(err);
+            Swal.fire({
+                icon: "error",
+                title: "Đã xảy ra lỗi vui lòng thử lại sau",
+            });
+        }
+        setIsLoading(false);
+    };
+
     return (
         <div className="bg-[#fff] px-4 py-6 mt-4 mb-6 shadow-sm rounded-[10px]">
             <h2 className="flex justify-center py-[20px] font-[600]">
-                Create Book
+                {slug ? "Update Book" : "Create Book"}
             </h2>
             <Row gutter={16}>
                 <Col sm={12}>
@@ -234,8 +411,8 @@ export default function CreateBook() {
                         className="border-[1px] w-[100%]"
                         placeholder="Nhập Meta Description cho sách (Tối đa 150 kí tự)"
                         allowClear
-                        value={textMeta}
-                        onChange={(e) => setTextMeta(e.target.value)}
+                        value={metaDescription}
+                        onChange={(e) => setMetaDescription(e.target.value)}
                     />
                 </Col>
             </Row>
@@ -254,6 +431,7 @@ export default function CreateBook() {
                                 accept="image/png, image/gif, image/jpeg"
                                 hidden
                             />
+
                             <Image
                                 src={thumbnailPreview}
                                 style={{
@@ -275,8 +453,61 @@ export default function CreateBook() {
                             </button>
                         </div>
                     </Col>
-                    <Col sm={12}>
-                        <PreviewListImage data={listImage} />
+                    <Col sm={12} className="relative">
+                        {isUpdate ? (
+                            <>
+                                <Button
+                                    type="primary"
+                                    className="absolute z-[3] right-[5px] mt-[3px]"
+                                    onClick={showModal}
+                                >
+                                    Delete
+                                </Button>
+                                <Modal
+                                    title="Chọn những ảnh bạn muốn xóa"
+                                    open={isModalOpen}
+                                    onOk={handleOk}
+                                    onCancel={handleCancel}
+                                >
+                                    {listImageUpdate &&
+                                        listImageUpdate.length > 0 &&
+                                        listImageUpdate.map((item) => {
+                                            return (
+                                                <div
+                                                    className="w-full object-cover"
+                                                    key={item.id}
+                                                >
+                                                    <Row className="w-full">
+                                                        <Col span={5}>
+                                                            <Checkbox
+                                                                onChange={(e) =>
+                                                                    handleDeleteImages(
+                                                                        item,
+                                                                        e
+                                                                    )
+                                                                }
+                                                            ></Checkbox>
+                                                        </Col>
+                                                        <Col span={19}>
+                                                            <Image
+                                                                className="w-full h-full"
+                                                                src={`${BASE_URL}/upload/folder/app/${item.link_url}/book`}
+                                                            ></Image>
+                                                        </Col>
+                                                    </Row>
+                                                </div>
+                                            );
+                                        })}
+                                </Modal>
+                            </>
+                        ) : (
+                            <></>
+                        )}
+
+                        <PreviewListImage
+                            data={slug ? listImageUpdate : listImage}
+                            isUpdate={isUpdate}
+                        />
                         <div className="mt-[10px]">
                             <label
                                 htmlFor="file-input"
@@ -294,7 +525,7 @@ export default function CreateBook() {
                                 className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600   file:bg-gray-50 file:border-0 file:me-4  file:py-3 file:px-4 dark:file:bg-gray-700 dark:file:text-gray-400"
                             />
                         </div>
-                        {!listImage.length && (
+                        {!listImage.length && !slug && (
                             <div className="mt-[10%] text-base flex py-3 pl-5 w-[100%] font-semibold border-[1px] border-[#ccc] rounded-lg">
                                 Bạn chưa biết về danh mục sách ?
                                 <ModalExplain />
@@ -318,12 +549,12 @@ export default function CreateBook() {
             </div>
             <div className="flex justify-end mr-1">
                 <Button
-                    onClick={handleSubmid}
+                    onClick={slug ? handleUpdateBook : handleSubmid}
                     type="primary"
                     className="mt-[10px]"
                     loading={isLoading}
                 >
-                    Tạo Sách
+                    {slug ? "Update sách" : "Tạo sách"}
                 </Button>
             </div>
         </div>

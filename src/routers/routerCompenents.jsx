@@ -4,6 +4,7 @@ import { RouterDTO } from "../utils/routers.dto";
 import Auth from "../systems/auth/Auth";
 import PrivateRouter from "../components/PrivateRouter/PrivateRouter";
 import DashBoard from "../systems/pages/DashBoard/DashBoard";
+import CreateBook from "../systems/pages/components/Book/ManageBook/CreateBook/createBook";
 
 export default function RouterComponent() {
     return (

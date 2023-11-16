@@ -3,9 +3,12 @@ import { HandleApi } from "../../../../../../services/handleApi";
 import { GetAllBooksService } from "../../../../../../services/bookService";
 import { BASE_URL } from "../../../../../../utils/constant";
 import { Image } from "antd";
+import { useNavigate } from "react-router-dom";
+import { RouterDTO } from "../../../../../../utils/routers.dto";
 
 export default function GetAllBook() {
     const [book, setBook] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const _fetch = async () => {
@@ -13,11 +16,14 @@ export default function GetAllBook() {
                 page: 1,
                 pageSize: 10,
             });
-            console.log(Res.items);
             setBook(Res.items);
         };
         _fetch();
     }, []);
+
+    const handleUpdate = (slug) => {
+        navigate(RouterDTO.book.handleBook + `?slug=${slug}`);
+    };
     return (
         <div>
             <table className="table-auto w-full">
@@ -56,8 +62,11 @@ export default function GetAllBook() {
                                     />
                                 </td>
                                 <td>
-                                    <button className="bg-[#ff8383] p-4 rounded-md ml-[50%] translate-x-[-50%] text-[#fff]">
-                                        Sửa
+                                    <button
+                                        className="bg-[#ff8383] p-4 rounded-md ml-[50%] translate-x-[-50%] text-[#fff]"
+                                        onClick={() => handleUpdate(item.slug)}
+                                    >
+                                        update
                                     </button>
                                 </td>
                             </tr>

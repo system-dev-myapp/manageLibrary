@@ -10,7 +10,7 @@ export function createBookService(data) {
 }
 
 export function UpdateBookService(data) {
-    return axios.put("https://lib.fstack.com.vn/api/v1/book", data, {
+    return axios.put("/book", data, {
         withCredentials: true,
         headers: {
             "Content-Type": "multipart/form-data",
@@ -20,6 +20,18 @@ export function UpdateBookService(data) {
 
 export function GetAllBooksService({ page = 1, pageSize = 10 }) {
     return axios.get(`/book?page=${page}&pageSize=${pageSize}`, {
+        withCredentials: true,
+    });
+}
+
+export function GetBookDetailService({ slug }) {
+    return axios.get(`/book/detail/${slug}`, {
+        withCredentials: true,
+    });
+}
+
+export function UpdateStatusImagesService(data) {
+    return axios.patch("/book/update-image-status", data, {
         withCredentials: true,
     });
 }
