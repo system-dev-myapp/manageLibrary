@@ -18,5 +18,6 @@ export const RouterDTO = Object.freeze({
     blog: {
         manageBlog: "/blog/*",
         createBlog: "/blog/createBlog",
+        allBlog: "/blog/allBlog",
     },
 });

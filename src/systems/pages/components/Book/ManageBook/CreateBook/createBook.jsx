@@ -44,6 +44,8 @@ export default function CreateBook() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChangeThumbnail, setIsChangeThumbnail] = useState(false);
 
+    const mdParser = new MarkdownIt(/* Markdown-it options */);
+
     const refInputThumbnail = useRef(null);
 
     function handleEditorChange({ html, text }) {
@@ -129,8 +131,6 @@ export default function CreateBook() {
             handleResetInCreate();
         }
     }, [slug, _fetchGetDetail, _fetch]);
-
-    const mdParser = new MarkdownIt(/* Markdown-it options */);
 
     const handleDeleteThumbnails = async () => {
         const isDelete = await Swal.fire({
