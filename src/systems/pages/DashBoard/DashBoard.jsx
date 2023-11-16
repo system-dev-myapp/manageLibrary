@@ -5,7 +5,8 @@ import { Route, Routes } from "react-router";
 import Categories from "../components/cate/Categories";
 import MenuSideBar from "../../components/SideBar/Sidebar";
 import Book from "../components/Book/Book";
-import User from "../user/User";
+import User from "../components/user/User";
+import Blog from "../components/blog/Blog";
 
 export default function DashBoard() {
     return (
@@ -32,6 +33,10 @@ export default function DashBoard() {
                                 <Route
                                     path={RouterDTO.user.manageUser}
                                     element={<User />}
+                                ></Route>
+                                <Route
+                                    path={RouterDTO.blog.manageBlog}
+                                    element={<Blog />}
                                 ></Route>
                             </Routes>
                         </div>

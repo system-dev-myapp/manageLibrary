@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import Swal from "sweetalert2";
 import Slider from "react-slick";
-import { Button, Image, Switch } from "antd";
+import { Image, Switch } from "antd";
 import React, { memo, useState } from "react";
 import { BASE_URL } from "../../../../../../../utils/constant";
 import { HandleApi } from "../../../../../../../services/handleApi";
@@ -67,18 +67,6 @@ const PreviewListImage = ({ data = [], isUpdate = false }) => {
         _fetch();
     };
 
-    // const handleDeleteImage = (book) => {
-    //     Swal.fire({
-    //         icon: "warning",
-    //         title: "Bạn có chắc muốn xóa ảnh này không ?",
-    //         showCancelButton: true,
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             setListImageDelete((prev) => [...prev, book.link_url]);
-    //         }
-    //     });
-    // };
-
     return (
         <div className="slider-preview-image">
             <div className="preview-image-custom-slider">
@@ -118,16 +106,6 @@ const PreviewListImage = ({ data = [], isUpdate = false }) => {
                                             onChange={() => onChange(item)}
                                         />
                                     </div>
-                                    {/* <div className="mr-[2px]">
-                                        <Button
-                                            type="primary"
-                                            onClick={() =>
-                                                handleDeleteImage(item)
-                                            }
-                                        >
-                                            Delete
-                                        </Button>
-                                    </div> */}
                                 </div>
                             ) : (
                                 <></>

@@ -1,42 +1,38 @@
+import { Button } from "antd";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Button } from "antd";
 import Swal from "sweetalert2";
-import { HandleApi } from "../../../../../services/handleApi";
-import { sendNotifyAllService } from "../../../../../services/userService";
+import { HandleApi } from "../../../../../../services/handleApi";
+import { sendEmailService } from "../../../../../../services/userService";
 
-export default function SendNotificationAll({ data, contentNotify }) {
+export default function SendNotification({ data, contentNotify }) {
     const [sent, setSent] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [isLoadingSend, setIsLoadingSend] = useState(false);
+
+    // handle send notification
 
     useEffect(() => {
-        const email = data.map((item) => {
-            return item.email;
-        });
-        setUsers(email);
         setSent(false);
-    }, [data]);
+    }, [contentNotify]);
 
     const handleValidate = () => {
         let isValid = true;
         if (!contentNotify) {
+            isValid = false;
             Swal.fire({
                 icon: "warning",
-                title: "Bạn vui lòng tạo thông báo trước khi gửi đến người dùng",
+                title: "Bạn vui lòng tạo thông báo trường khi gửi !",
             });
-            isValid = false;
         }
         return isValid;
     };
 
     const handleSendAgain = async () => {
-        const sendAgain = await Swal.fire({
-            title: "Thông báo này đã được gửi đến các tài khoản này",
-            text: "Bạn có chắc muốn gửi lại hay không ?",
+        const swal = await Swal.fire({
+            title: "Bạn có chắc muốn gửi thông báo thêm lần nữa ?",
             showDenyButton: true,
-            confirmButtonText: "Yes",
-            denyButtonText: `No`,
+            confirmButtonText: "Ok",
+            denyButtonText: "NO",
         }).then((result) => {
             if (result.isConfirmed) {
                 return true;
@@ -44,36 +40,36 @@ export default function SendNotificationAll({ data, contentNotify }) {
                 return false;
             }
         });
-        return sendAgain;
+
+        return swal;
     };
 
-    const handleSendNotify = async () => {
-        setIsLoading(true);
+    const handleSendOnly = async () => {
+        setIsLoadingSend(true);
         const check = handleValidate();
         if (!check) {
-            setIsLoading(false);
+            setIsLoadingSend(false);
             return;
         }
 
         if (sent) {
             const checkSendAgain = await handleSendAgain();
             if (!checkSendAgain) {
-                setIsLoading(false);
+                setIsLoadingSend(false);
                 return;
             }
         }
 
-        let dataBuider = {
-            email: users,
+        let dataBuilder = {
             html: contentNotify,
+            email: data.email,
         };
-
         try {
-            const Res = await HandleApi(sendNotifyAllService, dataBuider);
+            const Res = await HandleApi(sendEmailService, dataBuilder);
             if (Res.statusCode >= 200 && Res.statusCode < 400) {
                 Swal.fire({
                     icon: "success",
-                    title: "Bạn đã gửi thông báo thành công",
+                    title: "Gửi thành công",
                 });
                 setSent(true);
             }
@@ -84,22 +80,22 @@ export default function SendNotificationAll({ data, contentNotify }) {
                 title: "Đã xảy ra lỗi vui lòng thử lại sau !",
             });
         }
-        setIsLoading(false);
+        setIsLoadingSend(false);
     };
 
     return (
         <Button
-            type="primary"
-            className="w-full"
-            onClick={handleSendNotify}
-            loading={isLoading}
+            type={sent ? "danger" : "primary"}
+            loading={isLoadingSend}
+            onClick={handleSendOnly}
+            className="bg-[#bdbdbd]"
         >
-            Send All User
+            {sent ? "Đã gửi thông báo" : "Gửi thông báo"}
         </Button>
     );
 }
 
-SendNotificationAll.propTypes = {
-    data: PropTypes.array,
+SendNotification.propTypes = {
+    data: PropTypes.object,
     contentNotify: PropTypes.string,
 };

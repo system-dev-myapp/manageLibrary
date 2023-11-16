@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Modal, Pagination, Row, Table } from "antd";
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
-import { columns } from "../../../../data/dataTableUser/dataTableUser";
-import usePagination from "../../../../hook/usePagination";
-import { getAllUserService } from "../../../../services/userService";
-import handleUploadImageMarkdown from "../../../../helpers/handleUploadImageMarkdown";
+import { columns } from "../../../../../data/dataTableUser/dataTableUser";
+import usePagination from "../../../../../hook/usePagination";
+import { getAllUserService } from "../../../../../services/userService";
+import handleUploadImageMarkdown from "../../../../../helpers/handleUploadImageMarkdown";
 import Swal from "sweetalert2";
+// import SendNotification from "../user/AllUser/SendNotification/SendNotification";
 import SendNotification from "./SendNotification/SendNotification";
+// import SendNotificationAll from "../user/AllUser/SendNotificationAll/SendNotificationAll";
 import SendNotificationAll from "./SendNotificationAll/SendNotificationAll";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);

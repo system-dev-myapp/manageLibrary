@@ -319,7 +319,7 @@ export default function CreateBook() {
             meta_description: metaDescription,
             is_change_thumbnail: isChangeThumbnail,
             thumbnail_url: bookCurrent.thumbnail_url,
-            image_delete: imageDelete.length > 0 ? imageDelete : [],
+            image_delete: imageDelete,
         };
 
         try {
