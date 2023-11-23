@@ -29,7 +29,7 @@ export default function Book() {
             <Tabs
                 className=""
                 activeKey={locations.pathname}
-                defaultActiveKey={RouterDTO.book.createBook}
+                defaultActiveKey={RouterDTO.book.handleBook}
                 items={book}
                 onChange={onChange}
             />

@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import { HandleApi } from "../../../../../../services/handleApi";
 import {
     GetBookDetailService,
+    RevalidateBookService,
     UpdateBookService,
     createBookService,
 } from "../../../../../../services/bookService";
@@ -43,10 +44,12 @@ export default function CreateBook() {
     const [isUpdate, setIsUpdate] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChangeThumbnail, setIsChangeThumbnail] = useState(false);
-
-    const mdParser = new MarkdownIt(/* Markdown-it options */);
+    const [addImageUpdate, setAddImageUpdate] = useState([]);
 
     const refInputThumbnail = useRef(null);
+    const refInputListImage = useRef(null);
+
+    const mdParser = new MarkdownIt(/* Markdown-it options */);
 
     function handleEditorChange({ html, text }) {
         setMarkdown({ html: html, text: text });
@@ -106,8 +109,9 @@ export default function CreateBook() {
         }
     }, [slug]);
 
-    // reset states when you to again comoenent create
-    const handleResetInCreate = () => {
+    // reset states
+
+    const handleResetStates = () => {
         setTitle("");
         setMarkdown({
             text: "",
@@ -121,14 +125,18 @@ export default function CreateBook() {
         setListImage([]);
         setMetaDescription("");
     };
+
     //
+
     useEffect(() => {
         _fetch();
         if (slug) {
             setIsUpdate(true);
             _fetchGetDetail();
         } else {
-            handleResetInCreate();
+            setIsUpdate(false);
+            setListImageUpdate([]);
+            handleResetStates();
         }
     }, [slug, _fetchGetDetail, _fetch]);
 
@@ -173,6 +181,10 @@ export default function CreateBook() {
     };
 
     const chooseListImageFile = (e) => {
+        const input = refInputListImage.current;
+        if (!input) {
+            return;
+        }
         const files = e.target.files;
         let ImageFiles = [];
         if (files && files.length) {
@@ -181,13 +193,16 @@ export default function CreateBook() {
                     ImageFiles.push(item);
                 }
             });
+            console.log(ImageFiles);
             setListImage(ImageFiles);
+            if (isUpdate) {
+                setAddImageUpdate(ImageFiles);
+            }
         }
     };
 
     const handleSelectCate = (e) => {
         setCate(e);
-        console.log(e);
     };
 
     // validate
@@ -243,7 +258,11 @@ export default function CreateBook() {
                     icon: "success",
                     title: "Thành Công!",
                 });
-                handleResetInCreate();
+                handleResetStates();
+                // RevalidateBookService();
+                URL.revokeObjectURL(thumbnailPreview);
+                refInputThumbnail.current.value = null;
+                refInputListImage.current.value = null;
             }
         } catch (error) {
             Swal.fire({
@@ -280,12 +299,14 @@ export default function CreateBook() {
             confirmButtonText: "OK",
         }).then((result) => {
             if (result.isConfirmed) {
+                setImageDelete([]);
                 setIsModalOpen(false);
             }
         });
     };
 
-    // update book
+    // checkbox delete images
+
     const handleDeleteImages = (image, e) => {
         console.log(e.target.checked);
         if (e.target.checked) {
@@ -294,10 +315,11 @@ export default function CreateBook() {
             const arrClone = imageDelete.filter((item) => {
                 return item !== image.link_url;
             });
-            console.log(arrClone);
             setImageDelete(arrClone);
         }
     };
+
+    // update book
 
     const handleUpdateBook = async () => {
         setIsLoading(true);
@@ -307,6 +329,33 @@ export default function CreateBook() {
             return;
         }
 
+        // var formData = new FormData();
+        // formData.append("title", title);
+        // formData.append("description", markdown.html);
+        // formData.append("description_markdown", markdown.text);
+        // formData.append("stock", number);
+        // formData.append("is_active", active === "active" ? true : false);
+        // formData.append("id", bookCurrent.id);
+        // formData.append("meta_description", metaDescription);
+        // formData.append("is_change_thumbnail", isChangeThumbnail);
+        // formData.append("thumbnail_url", bookCurrent.thumbnail_url);
+        // formData.append("image_delete", imageDelete);
+        // formData.append("categories", cate);
+        // for (let i = 0; i < cate.length; i++) {
+        //     formData.append("categories", cate[i]);
+        // }
+
+        // let arrImages;
+        // if (thumbnail.length > 0) {
+        //     arrImages = [thumbnail, ...listImage];
+        // } else {
+        //     arrImages = listImage;
+        // }
+        // formData.append("images", arrImages);
+        // for (let i = 0; i < arrImages.length; i++) {
+        //     formData.append("images", arrImages[i]);
+        // }
+
         let dataBuider = {
             title: title,
             description: markdown.html,
@@ -314,21 +363,25 @@ export default function CreateBook() {
             stock: number,
             is_active: active === "active" ? true : false,
             categories: cate.map((item) => item.value),
-            images: [...thumbnail, ...listImage],
+            images: Array.isArray(thumbnail)
+                ? listImage
+                : [thumbnail, ...listImage],
             id: bookCurrent.id,
             meta_description: metaDescription,
             is_change_thumbnail: isChangeThumbnail,
             thumbnail_url: bookCurrent.thumbnail_url,
             image_delete: imageDelete,
         };
+        console.log(dataBuider.images);
 
         try {
             const Res = await HandleApi(UpdateBookService, dataBuider);
-            if (Res.statusCode === HttpStatusCode.OK) {
+            if (Res.statusCode === 200) {
                 Swal.fire({
                     icon: "success",
                     title: "Bạn đã update thành công",
                 });
+                // RevalidateBookService();
             }
         } catch (err) {
             console.log(err);
@@ -481,6 +534,7 @@ export default function CreateBook() {
                                                     <Row className="w-full">
                                                         <Col span={5}>
                                                             <Checkbox
+                                                                // checked={}
                                                                 onChange={(e) =>
                                                                     handleDeleteImages(
                                                                         item,
@@ -506,8 +560,9 @@ export default function CreateBook() {
                         )}
 
                         <PreviewListImage
-                            data={slug ? listImageUpdate : listImage}
+                            data={isUpdate ? listImageUpdate : listImage}
                             isUpdate={isUpdate}
+                            addImages={addImageUpdate}
                         />
                         <div className="mt-[10px]">
                             <label
@@ -517,6 +572,7 @@ export default function CreateBook() {
                                 Chọn Thêm Ảnh
                             </label>
                             <input
+                                ref={refInputListImage}
                                 onChange={chooseListImageFile}
                                 type="file"
                                 name="file-input"

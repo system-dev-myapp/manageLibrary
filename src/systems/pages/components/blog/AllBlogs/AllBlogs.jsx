@@ -1,29 +1,31 @@
 import { Button } from "antd";
 import React from "react";
+import { Table } from "antd";
+import { columnsTableBlogs } from "../../../../../data/dataTableBlogs/dataTableBlogs";
 
 export default function AllBlogs() {
     return (
         <div>
-            <table className="w-[100%]">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên bài viết</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="text-center">1</td>
-                        <td className="text-center">Tên </td>
-                        <td className="text-center">Ẩn/ hiện</td>
-                        <td className="text-center">
-                            <Button type="primary">Chỉnh sửa bài viết</Button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <p>quản lí bài viết</p>
+            <div className="table_blogs">
+                <Table
+                    // pagination={false}
+                    bordered
+                    virtual
+                    scroll={{ x: 400, y: 400 }}
+                    rowKey="id"
+                    // dataSource={allUsers}
+                    columns={columnsTableBlogs.map((item) => {
+                        if (item.dataIndex === "action") {
+                            item.render = (...data) => {
+                                return <div>a</div>;
+                            };
+                        }
+                        return item;
+                    })}
+                />
+            </div>
+            <div className=""></div>
         </div>
     );
 }

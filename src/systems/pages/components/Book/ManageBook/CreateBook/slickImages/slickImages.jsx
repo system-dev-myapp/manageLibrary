@@ -8,11 +8,12 @@ import { HandleApi } from "../../../../../../../services/handleApi";
 import { UpdateStatusImagesService } from "../../../../../../../services/bookService";
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
-const PreviewListImage = ({ data = [], isUpdate = false }) => {
+const PreviewListImage = ({ data = [], isUpdate, addImages = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [linkPreview, setLinkPreview] = useState("");
-    // const [listImageDelete, setListImageDelete] = useState([]);
 
+    console.log(data);
+    console.log(addImages);
     const settings = {
         customPaging: function (i) {
             return (
@@ -21,8 +22,11 @@ const PreviewListImage = ({ data = [], isUpdate = false }) => {
                         className="w-[50px] h-[50px] object-cover flex-shrink-0 block rounded-[50%] shadow-sm border-[1px] border-solid border-[#ccc]"
                         src={
                             isUpdate
-                                ? `${BASE_URL}/upload/folder/app/${data[i].link_url}/book`
-                                : URL.createObjectURL(data[i])
+                                ? addImages.length > 0
+                                    ? URL.createObjectURL(addImages[i])
+                                    : `${BASE_URL}/upload/folder/app/${data[i].link_url}/book`
+                                : // ? `${BASE_URL}/upload/folder/app/${data[i].link_url}/book`
+                                  URL.createObjectURL(data[i])
                         }
                     />
                 </a>
@@ -89,7 +93,7 @@ const PreviewListImage = ({ data = [], isUpdate = false }) => {
                     </Image.PreviewGroup>
                 )}
             </div>
-            <Slider {...settings}>
+            <Slider {...settings} defaultChecked={1}>
                 {data &&
                     data.length > 0 &&
                     data.map((item, index) => (
@@ -110,7 +114,6 @@ const PreviewListImage = ({ data = [], isUpdate = false }) => {
                             ) : (
                                 <></>
                             )}
-
                             <Image
                                 onClick={() => {
                                     handleClickPreviewImage(

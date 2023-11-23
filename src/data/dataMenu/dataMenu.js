@@ -9,7 +9,7 @@ export const childrenList = [
 
 export const urlchildrenList = [
     ["/dashboard"],
-    ["/cate/createCategory", "/book/create"],
+    ["/cate/createCategory", "/book/handle"],
     ["/user/allUser"],
     ["/blog/createBlog"],
     ["/order/allorder"],
