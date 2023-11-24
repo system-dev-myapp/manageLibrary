@@ -13,6 +13,7 @@ const items = [
     FileDoneOutlined,
     FileDoneOutlined,
     FileDoneOutlined,
+    FileDoneOutlined,
 ].map((icon, index) => {
     const key = index;
     return {

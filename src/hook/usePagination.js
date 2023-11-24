@@ -7,6 +7,7 @@ const usePagination = ({
     pageSize,
     isToken = false,
     is_load_more = false,
+    is_reload = false,
 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState([]);
@@ -47,7 +48,14 @@ const usePagination = ({
             setIsLoading(false);
         };
         _fetch();
-    }, [api, isToken, is_load_more, pagination.page, pagination.pageSize]);
+    }, [
+        api,
+        isToken,
+        is_load_more,
+        pagination.page,
+        pagination.pageSize,
+        is_reload,
+    ]);
 
     const handleChangePage = (page) => {
         if (meta) {

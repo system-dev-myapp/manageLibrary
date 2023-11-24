@@ -7,9 +7,7 @@ import usePagination from "../../../../../hook/usePagination";
 import { getAllUserService } from "../../../../../services/userService";
 import handleUploadImageMarkdown from "../../../../../helpers/handleUploadImageMarkdown";
 import Swal from "sweetalert2";
-// import SendNotification from "../user/AllUser/SendNotification/SendNotification";
 import SendNotification from "./SendNotification/SendNotification";
-// import SendNotificationAll from "../user/AllUser/SendNotificationAll/SendNotificationAll";
 import SendNotificationAll from "./SendNotificationAll/SendNotificationAll";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);

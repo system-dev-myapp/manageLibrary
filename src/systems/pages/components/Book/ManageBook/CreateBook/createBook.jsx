@@ -12,7 +12,6 @@ import { useLocation } from "react-router-dom";
 import { HandleApi } from "../../../../../../services/handleApi";
 import {
     GetBookDetailService,
-    RevalidateBookService,
     UpdateBookService,
     createBookService,
 } from "../../../../../../services/bookService";
@@ -44,12 +43,14 @@ export default function CreateBook() {
     const [isUpdate, setIsUpdate] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChangeThumbnail, setIsChangeThumbnail] = useState(false);
-    const [addImageUpdate, setAddImageUpdate] = useState([]);
+    const [checkedList, setCheckedList] = useState([]);
+    const [isAddImagesUpdate, setIsAddImagesUpdate] = useState(false);
 
     const refInputThumbnail = useRef(null);
     const refInputListImage = useRef(null);
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
+    const CheckboxGroup = Checkbox.Group;
 
     function handleEditorChange({ html, text }) {
         setMarkdown({ html: html, text: text });
@@ -181,6 +182,9 @@ export default function CreateBook() {
     };
 
     const chooseListImageFile = (e) => {
+        if (isUpdate) {
+            setIsAddImagesUpdate(true);
+        }
         const input = refInputListImage.current;
         if (!input) {
             return;
@@ -195,9 +199,6 @@ export default function CreateBook() {
             });
             console.log(ImageFiles);
             setListImage(ImageFiles);
-            if (isUpdate) {
-                setAddImageUpdate(ImageFiles);
-            }
         }
     };
 
@@ -287,6 +288,7 @@ export default function CreateBook() {
         }).then((result) => {
             if (result.isConfirmed) {
                 setIsModalOpen(false);
+                setImageDelete(checkedList);
             }
         });
     };
@@ -300,6 +302,7 @@ export default function CreateBook() {
         }).then((result) => {
             if (result.isConfirmed) {
                 setImageDelete([]);
+                setCheckedList([]);
                 setIsModalOpen(false);
             }
         });
@@ -307,16 +310,8 @@ export default function CreateBook() {
 
     // checkbox delete images
 
-    const handleDeleteImages = (image, e) => {
-        console.log(e.target.checked);
-        if (e.target.checked) {
-            setImageDelete((prev) => [...prev, image.link_url]);
-        } else {
-            const arrClone = imageDelete.filter((item) => {
-                return item !== image.link_url;
-            });
-            setImageDelete(arrClone);
-        }
+    const handleDeleteImages = (list) => {
+        setCheckedList(list);
     };
 
     // update book
@@ -328,33 +323,6 @@ export default function CreateBook() {
             setIsLoading(false);
             return;
         }
-
-        // var formData = new FormData();
-        // formData.append("title", title);
-        // formData.append("description", markdown.html);
-        // formData.append("description_markdown", markdown.text);
-        // formData.append("stock", number);
-        // formData.append("is_active", active === "active" ? true : false);
-        // formData.append("id", bookCurrent.id);
-        // formData.append("meta_description", metaDescription);
-        // formData.append("is_change_thumbnail", isChangeThumbnail);
-        // formData.append("thumbnail_url", bookCurrent.thumbnail_url);
-        // formData.append("image_delete", imageDelete);
-        // formData.append("categories", cate);
-        // for (let i = 0; i < cate.length; i++) {
-        //     formData.append("categories", cate[i]);
-        // }
-
-        // let arrImages;
-        // if (thumbnail.length > 0) {
-        //     arrImages = [thumbnail, ...listImage];
-        // } else {
-        //     arrImages = listImage;
-        // }
-        // formData.append("images", arrImages);
-        // for (let i = 0; i < arrImages.length; i++) {
-        //     formData.append("images", arrImages[i]);
-        // }
 
         let dataBuider = {
             title: title,
@@ -372,7 +340,6 @@ export default function CreateBook() {
             thumbnail_url: bookCurrent.thumbnail_url,
             image_delete: imageDelete,
         };
-        console.log(dataBuider.images);
 
         try {
             const Res = await HandleApi(UpdateBookService, dataBuider);
@@ -381,7 +348,7 @@ export default function CreateBook() {
                     icon: "success",
                     title: "Bạn đã update thành công",
                 });
-                // RevalidateBookService();
+                setCheckedList([]);
             }
         } catch (err) {
             console.log(err);
@@ -390,7 +357,10 @@ export default function CreateBook() {
                 title: "Đã xảy ra lỗi vui lòng thử lại sau",
             });
         }
+        _fetchGetDetail();
+        setIsAddImagesUpdate(false);
         setIsLoading(false);
+        setListImage([]);
     };
 
     return (
@@ -522,37 +492,38 @@ export default function CreateBook() {
                                     open={isModalOpen}
                                     onOk={handleOk}
                                     onCancel={handleCancel}
+                                    className=""
                                 >
-                                    {listImageUpdate &&
-                                        listImageUpdate.length > 0 &&
-                                        listImageUpdate.map((item) => {
-                                            return (
-                                                <div
-                                                    className="w-full object-cover"
-                                                    key={item.id}
-                                                >
-                                                    <Row className="w-full">
-                                                        <Col span={5}>
-                                                            <Checkbox
-                                                                // checked={}
-                                                                onChange={(e) =>
-                                                                    handleDeleteImages(
-                                                                        item,
-                                                                        e
-                                                                    )
-                                                                }
-                                                            ></Checkbox>
-                                                        </Col>
-                                                        <Col span={19}>
-                                                            <Image
-                                                                className="w-full h-full"
-                                                                src={`${BASE_URL}/upload/folder/app/${item.link_url}/book`}
-                                                            ></Image>
-                                                        </Col>
-                                                    </Row>
-                                                </div>
-                                            );
-                                        })}
+                                    <div
+                                        className="overflow-auto"
+                                        style={{ maxHeight: 300 }}
+                                    >
+                                        {listImageUpdate &&
+                                            listImageUpdate.length > 0 && (
+                                                <CheckboxGroup
+                                                    className=" w-[150px]"
+                                                    options={listImageUpdate.map(
+                                                        (item) => {
+                                                            return {
+                                                                label: (
+                                                                    <div
+                                                                        style={{
+                                                                            backgroundImage: `url(${BASE_URL}/upload/folder/app/${item.link_url}/book)`,
+                                                                        }}
+                                                                        className="w-[150px] h-[200px]"
+                                                                    ></div>
+                                                                ),
+                                                                value: item.link_url,
+                                                            };
+                                                        }
+                                                    )}
+                                                    value={checkedList}
+                                                    onChange={(e) =>
+                                                        handleDeleteImages(e)
+                                                    }
+                                                />
+                                            )}
+                                    </div>
                                 </Modal>
                             </>
                         ) : (
@@ -560,9 +531,17 @@ export default function CreateBook() {
                         )}
 
                         <PreviewListImage
-                            data={isUpdate ? listImageUpdate : listImage}
+                            data={
+                                isUpdate
+                                    ? isAddImagesUpdate
+                                        ? listImage
+                                        : listImageUpdate
+                                    : listImage
+                            }
                             isUpdate={isUpdate}
-                            addImages={addImageUpdate}
+                            isAddImage={isAddImagesUpdate}
+                            listImagesDelete={checkedList}
+                            // fetch={_fetchGetDetail}
                         />
                         <div className="mt-[10px]">
                             <label

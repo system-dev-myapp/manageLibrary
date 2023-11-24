@@ -2,32 +2,53 @@
 import Swal from "sweetalert2";
 import Slider from "react-slick";
 import { Image, Switch } from "antd";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { BASE_URL } from "../../../../../../../utils/constant";
 import { HandleApi } from "../../../../../../../services/handleApi";
 import { UpdateStatusImagesService } from "../../../../../../../services/bookService";
 
 // eslint-disable-next-line react/prop-types, no-unused-vars
-const PreviewListImage = ({ data = [], isUpdate, addImages = [] }) => {
+const PreviewListImage = ({
+    data = [],
+    isUpdate,
+    isAddImage,
+    listImagesDelete,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [linkPreview, setLinkPreview] = useState("");
+    const [dataListImages, setDataListImages] = useState([]);
+    useEffect(() => {
+        console.log(data, isAddImage);
+        console.log("lot vao day");
 
-    console.log(data);
-    console.log(addImages);
+        if (data.length > 0) {
+            let arrLinkImage = data.map((item) => {
+                return {
+                    link: isUpdate
+                        ? isAddImage
+                            ? URL.createObjectURL(item)
+                            : `${BASE_URL}/upload/folder/app/${item.link_url}/book`
+                        : URL.createObjectURL(item),
+                    is_active: isUpdate
+                        ? isAddImage
+                            ? true
+                            : item.is_active
+                        : true,
+                };
+            });
+            setDataListImages(
+                isAddImage ? (prev) => [...prev, ...arrLinkImage] : arrLinkImage
+            );
+        }
+    }, [data, isUpdate, listImagesDelete]);
+
     const settings = {
         customPaging: function (i) {
             return (
                 <a>
                     <img
                         className="w-[50px] h-[50px] object-cover flex-shrink-0 block rounded-[50%] shadow-sm border-[1px] border-solid border-[#ccc]"
-                        src={
-                            isUpdate
-                                ? addImages.length > 0
-                                    ? URL.createObjectURL(addImages[i])
-                                    : `${BASE_URL}/upload/folder/app/${data[i].link_url}/book`
-                                : // ? `${BASE_URL}/upload/folder/app/${data[i].link_url}/book`
-                                  URL.createObjectURL(data[i])
-                        }
+                        src={dataListImages[i]?.link}
                     />
                 </a>
             );
@@ -94,9 +115,9 @@ const PreviewListImage = ({ data = [], isUpdate, addImages = [] }) => {
                 )}
             </div>
             <Slider {...settings} defaultChecked={1}>
-                {data &&
-                    data.length > 0 &&
-                    data.map((item, index) => (
+                {dataListImages &&
+                    dataListImages.length > 0 &&
+                    dataListImages.map((item, index) => (
                         <div key={index}>
                             {isUpdate ? (
                                 <div className="w-full flex justify-between my-2">
@@ -116,20 +137,12 @@ const PreviewListImage = ({ data = [], isUpdate, addImages = [] }) => {
                             )}
                             <Image
                                 onClick={() => {
-                                    handleClickPreviewImage(
-                                        isUpdate
-                                            ? `${BASE_URL}/upload/folder/app/${item.link_url}/book`
-                                            : URL.createObjectURL(item)
-                                    );
+                                    handleClickPreviewImage(item.link);
                                 }}
                                 preview={false}
                                 key={index}
                                 className="w-[100%] object-cover h-200px-imp rounded-[6px] border-[1px] border-solid border-[#ccc]"
-                                src={
-                                    isUpdate
-                                        ? `${BASE_URL}/upload/folder/app/${item.link_url}/book`
-                                        : URL.createObjectURL(item)
-                                }
+                                src={item.link}
                             />
                         </div>
                     ))}

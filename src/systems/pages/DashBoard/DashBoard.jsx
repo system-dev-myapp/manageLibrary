@@ -7,6 +7,7 @@ import MenuSideBar from "../../components/SideBar/Sidebar";
 import Book from "../components/Book/Book";
 import User from "../components/user/User";
 import Blog from "../components/blog/Blog";
+import Order from "../components/order/Order";
 
 export default function DashBoard() {
     return (
@@ -37,6 +38,10 @@ export default function DashBoard() {
                                 <Route
                                     path={RouterDTO.blog.manageBlog}
                                     element={<Blog />}
+                                ></Route>
+                                <Route
+                                    path={RouterDTO.order.manageOrder}
+                                    element={<Order />}
                                 ></Route>
                             </Routes>
                         </div>

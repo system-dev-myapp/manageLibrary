@@ -3,6 +3,7 @@ export const childrenList = [
     ["Quản lí danh mục", "Quản lí sách"],
     ["Quản lí người dùng"],
     ["Quản lí blogs"],
+    ["Quản lí đơn mượn sách"],
 ];
 
 export const urlchildrenList = [
@@ -10,6 +11,7 @@ export const urlchildrenList = [
     ["/cate/createCategory", "/book/handle"],
     ["/user/allUser"],
     ["/blog/createBlog"],
+    ["/order/all"],
 ];
 
-export const sideBarList = ["Dashboard", "Books", "User", "Blog"];
+export const sideBarList = ["Dashboard", "Books", "User", "Blog", "Order"];
