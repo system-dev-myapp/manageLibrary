@@ -1,14 +1,14 @@
 import React from "react";
 import { RouterDTO } from "../../../../utils/routers.dto";
-import { useLocation, useNavigate } from "react-router";
-import { Tabs } from "antd";
 import AllOrder from "./AllOrder/AllOrder";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Tabs } from "antd";
 
 export default function Order() {
     const order = [
         {
             key: RouterDTO.order.allOrder,
-            label: "Tất cả đơn mượn",
+            label: "Tất cả đơn order",
             children: <AllOrder />,
         },
     ];
