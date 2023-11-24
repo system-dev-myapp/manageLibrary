@@ -2,7 +2,6 @@ import {
     FileDoneOutlined,
     PieChartOutlined,
     ScheduleOutlined,
-    LineChartOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import React from "react";
@@ -19,7 +18,6 @@ const items = [
     FileDoneOutlined,
     FileDoneOutlined,
     ScheduleOutlined,
-    LineChartOutlined,
 ].map((icon, index) => {
     const key = index;
     return {

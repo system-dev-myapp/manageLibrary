@@ -5,11 +5,6 @@ export const columnsTableBlogs = [
         width: 50,
     },
     {
-        title: "Thumbnail",
-        dataIndex: "thumbnail",
-        width: "auto",
-    },
-    {
         title: "Tên bài viết",
         dataIndex: "",
         width: "auto",
