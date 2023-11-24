@@ -26,7 +26,6 @@ ChartJS.register(
 const generateRandomData = () => {
     return Array.from({ length: 12 }, () => Math.floor(Math.random() * 200));
 };
-console.log(generateRandomData());
 
 const options = {
     responsive: true,
@@ -81,8 +80,8 @@ const data = {
     ],
 };
 
-const LineChart = () => {
+const DataStatistics = () => {
     return <Line className="h-[500px]" options={options} data={data} />;
 };
 
-export default LineChart;
+export default DataStatistics;

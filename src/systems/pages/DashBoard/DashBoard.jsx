@@ -9,6 +9,7 @@ import User from "../components/user/User";
 import Blog from "../components/blog/Blog";
 import Order from "../components/Order/Order";
 import Statistics from "../components/Statistics/Statistics";
+import DataStatistics from "../components/Statistics/dataStatistics/dataStatistics";
 
 export default function DashBoard() {
     return (
@@ -45,8 +46,8 @@ export default function DashBoard() {
                                     element={<Order />}
                                 ></Route>
                                 <Route
-                                    path={RouterDTO.Statistics.dataStatistics}
-                                    element={<Statistics />}
+                                    path={"/"}
+                                    element={<DataStatistics />}
                                 ></Route>
                             </Routes>
                         </div>

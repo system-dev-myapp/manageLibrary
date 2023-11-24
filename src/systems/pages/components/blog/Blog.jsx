@@ -8,7 +8,7 @@ import AllBlogs from "./AllBlogs/AllBlogs";
 export default function Blog() {
     const blogs = [
         {
-            key: RouterDTO.blog.createBlog,
+            key: RouterDTO.blog.handleBlogs,
             label: "Tạo bài viết",
             children: <CreateBlog />,
         },
@@ -29,7 +29,7 @@ export default function Blog() {
             <Tabs
                 className=""
                 activeKey={locations.pathname}
-                defaultActiveKey={RouterDTO.user.allUser}
+                defaultActiveKey={RouterDTO.blog.allBlog}
                 items={blogs}
                 onChange={onChange}
             />

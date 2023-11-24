@@ -12,7 +12,6 @@ import { useLocation } from "react-router-dom";
 import { HandleApi } from "../../../../../../services/handleApi";
 import {
     GetBookDetailService,
-    RevalidateBookService,
     UpdateBookService,
     createBookService,
 } from "../../../../../../services/bookService";
@@ -73,6 +72,7 @@ export default function CreateBook() {
     const slug = loction.search.slice(loction.search.search("=") + 1);
     const _fetchGetDetail = useCallback(async () => {
         try {
+            setIsLoading(true);
             const Res = await HandleApi(GetBookDetailService, {
                 slug: slug,
             });
@@ -253,6 +253,7 @@ export default function CreateBook() {
         };
         try {
             const Res = await HandleApi(createBookService, dataBuilder);
+
             if (Res.statusCode === HttpStatusCode.Ok) {
                 Swal.fire({
                     icon: "success",
@@ -329,33 +330,6 @@ export default function CreateBook() {
             return;
         }
 
-        // var formData = new FormData();
-        // formData.append("title", title);
-        // formData.append("description", markdown.html);
-        // formData.append("description_markdown", markdown.text);
-        // formData.append("stock", number);
-        // formData.append("is_active", active === "active" ? true : false);
-        // formData.append("id", bookCurrent.id);
-        // formData.append("meta_description", metaDescription);
-        // formData.append("is_change_thumbnail", isChangeThumbnail);
-        // formData.append("thumbnail_url", bookCurrent.thumbnail_url);
-        // formData.append("image_delete", imageDelete);
-        // formData.append("categories", cate);
-        // for (let i = 0; i < cate.length; i++) {
-        //     formData.append("categories", cate[i]);
-        // }
-
-        // let arrImages;
-        // if (thumbnail.length > 0) {
-        //     arrImages = [thumbnail, ...listImage];
-        // } else {
-        //     arrImages = listImage;
-        // }
-        // formData.append("images", arrImages);
-        // for (let i = 0; i < arrImages.length; i++) {
-        //     formData.append("images", arrImages[i]);
-        // }
-
         let dataBuider = {
             title: title,
             description: markdown.html,
@@ -372,7 +346,6 @@ export default function CreateBook() {
             thumbnail_url: bookCurrent.thumbnail_url,
             image_delete: imageDelete,
         };
-        console.log(dataBuider.images);
 
         try {
             const Res = await HandleApi(UpdateBookService, dataBuider);
