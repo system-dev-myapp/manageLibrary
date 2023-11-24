@@ -74,6 +74,7 @@ export default function CreateBook() {
     const slug = loction.search.slice(loction.search.search("=") + 1);
     const _fetchGetDetail = useCallback(async () => {
         try {
+            setIsLoading(true);
             const Res = await HandleApi(GetBookDetailService, {
                 slug: slug,
             });
@@ -254,6 +255,7 @@ export default function CreateBook() {
         };
         try {
             const Res = await HandleApi(createBookService, dataBuilder);
+
             if (Res.statusCode === HttpStatusCode.Ok) {
                 Swal.fire({
                     icon: "success",

@@ -1,21 +1,15 @@
 import React from "react";
 import { RouterDTO } from "../../../../utils/routers.dto";
-import CreateBlog from "./CreateBlog/CreateBlog";
+import AllOrder from "./AllOrder/AllOrder";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tabs } from "antd";
-import AllBlogs from "./AllBlogs/AllBlogs";
 
-export default function Blog() {
-    const blogs = [
+export default function Order() {
+    const order = [
         {
-            key: RouterDTO.blog.handleBlogs,
-            label: "Tạo bài viết",
-            children: <CreateBlog />,
-        },
-        {
-            key: RouterDTO.blog.allBlog,
-            label: "Tất cả bài viết",
-            children: <AllBlogs />,
+            key: RouterDTO.order.getAllOrder,
+            label: "Tất cả đơn order",
+            children: <AllOrder />,
         },
     ];
 
@@ -29,8 +23,8 @@ export default function Blog() {
             <Tabs
                 className=""
                 activeKey={locations.pathname}
-                defaultActiveKey={RouterDTO.blog.allBlog}
-                items={blogs}
+                defaultActiveKey={RouterDTO.order.getAllOrder}
+                items={order}
                 onChange={onChange}
             />
         </div>

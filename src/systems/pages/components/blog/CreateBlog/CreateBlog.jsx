@@ -1,11 +1,20 @@
 import { Button, Col, Divider, Input, Row, Select, Typography } from "antd";
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useState } from "react";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import handleUploadImageMarkdown from "../../../../../helpers/handleUploadImageMarkdown";
 import { dataCategories } from "../../../../../data/dataCategories/dateCategories";
+import Swal from "sweetalert2";
+import { HandleApi } from "../../../../../services/handleApi";
+import {
+    GetBlogDetailService,
+    UpdateBlogService,
+    createBlogService,
+} from "../../../../../services/blogService";
+import { HttpStatusCode } from "axios";
+import { useLocation } from "react-router-dom";
 
 const { Paragraph } = Typography;
 
@@ -18,6 +27,7 @@ export default function CreateBlog() {
         text: "",
         html: "",
     });
+    const [isLoading, setIsLoading] = useState("false");
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -25,7 +35,136 @@ export default function CreateBlog() {
         setMarkdown({ html: html, text: text });
     }
 
-    const handleCreateBlog = () => {};
+    const handleValidate = () => {
+        let isValid = true;
+        const arrClone = [
+            title,
+            active,
+            metaDescription,
+            markdown.html,
+            markdown.text,
+        ];
+        for (let i = 0; i < arrClone.length; i++) {
+            if (!arrClone[i]) {
+                isValid = false;
+                Swal.fire({
+                    icon: "error",
+                    title: " Bạn vui lòng không để trống các trường !",
+                });
+                break;
+            }
+        }
+        return isValid;
+    };
+
+    const resetState = () => {
+        setTitle("");
+        setActive(dataCategories[0].value);
+        setMetaDescription("");
+        setMarkdown({
+            text: "",
+            html: "",
+        });
+        setIsLoading(false);
+    };
+
+    const handleCreateBlog = async () => {
+        setIsLoading(true);
+        const check = handleValidate();
+        if (!check) {
+            setIsLoading(false);
+            return;
+        }
+        let dataBuider = {
+            title: title,
+            is_active: active === "active" ? true : false,
+            meta_description: metaDescription,
+            contentHTML: markdown.html,
+            contentMarkDown: markdown.text,
+        };
+        try {
+            const Res = await HandleApi(createBlogService, dataBuider);
+            console.log(Res);
+            if (Res.statusCode === HttpStatusCode.Ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Thành Công!",
+                });
+                resetState();
+            }
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Có Lỗi Xảy Ra Vui Lòng Thử Lại Sau!",
+                footer: '<a href="https://fstack.com.vn/">Tại sao tôi gặp vấn đề này?</a>',
+            });
+        }
+    };
+
+    //blog update by slug
+    const location = useLocation();
+    const RefId = useRef(null);
+    const slug = location.search.slice(location.search.search("=") + 1);
+    const _fetchDetail = useCallback(async () => {
+        try {
+            const Res = await HandleApi(GetBlogDetailService, {
+                slug: slug,
+            });
+            if (Res.statusCode == 200) {
+                RefId.current = Res.data.id;
+                const blog = Res.data;
+                setTitle(blog.title);
+                setActive(blog.is_active ? "hiển thị" : "ẩn");
+                setMetaDescription(blog.meta_description);
+                setMarkdown({
+                    text: blog.contentMarkDown,
+                    html: blog.contentHTML,
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, [slug]);
+
+    useEffect(() => {
+        _fetchDetail();
+    }, [slug, _fetchDetail]);
+
+    const handleUpdateBlog = async () => {
+        setIsLoading(true);
+        const check = handleValidate();
+        if (!check) {
+            setIsLoading(false);
+            return;
+        }
+        let databuil = {
+            id: RefId.current,
+            title: title,
+            is_active: active === "active" ? true : false,
+            meta_description: metaDescription,
+            contentHTML: markdown.html,
+            contentMarkDown: markdown.text,
+        };
+        try {
+            const Res = await HandleApi(UpdateBlogService, databuil);
+            if (Res.statusCode === 200) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Bạn đã update thành công",
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Có Lỗi Xảy Ra Vui Lòng Thử Lại Sau!",
+                footer: '<a href="https://fstack.com.vn/">Tại sao tôi gặp vấn đề này?</a>',
+            });
+        }
+    };
 
     return (
         <div>
@@ -103,9 +242,9 @@ export default function CreateBlog() {
                 <Button
                     type="primary"
                     className="w-full"
-                    onClick={handleCreateBlog}
+                    onClick={slug ? handleUpdateBlog : handleCreateBlog}
                 >
-                    Tạo
+                    {slug ? "Update sách" : "Tạo sách"}
                 </Button>
             </div>
         </div>

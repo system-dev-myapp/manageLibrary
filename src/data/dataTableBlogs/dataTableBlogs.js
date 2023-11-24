@@ -1,22 +1,17 @@
 export const columnsTableBlogs = [
     {
-        title: "stt",
-        dataIndex: "stt",
+        title: "ID",
+        dataIndex: "ID",
         width: 50,
     },
     {
-        title: "Thumbnail",
-        dataIndex: "thumbnail",
-        width: "auto",
-    },
-    {
         title: "Tên bài viết",
-        dataIndex: "",
+        dataIndex: "text",
         width: "auto",
     },
     {
-        title: "thể loại",
-        dataIndex: "",
+        title: "Trạng thái",
+        dataIndex: "is_active",
         width: "auto",
     },
     {
