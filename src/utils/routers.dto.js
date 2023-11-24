@@ -21,9 +21,6 @@ export const RouterDTO = Object.freeze({
         allBlog: "/blog/allBlog",
         handleBlogs: "/blog/handleBlogs",
     },
-    order: {
-        getAllOrder: "/order/allorder",
-    },
     Statistics: {
         dataStatistics: "/data/statistics",
     },
