@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Modal, Pagination, Row, Table } from "antd";
+import { Button, Col, Input, Modal, Pagination, Row, Table } from "antd";
 import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import { columns } from "../../../../../data/dataTableUser/dataTableUser";
@@ -9,16 +9,35 @@ import handleUploadImageMarkdown from "../../../../../helpers/handleUploadImageM
 import Swal from "sweetalert2";
 import SendNotification from "./SendNotification/SendNotification";
 import SendNotificationAll from "./SendNotificationAll/SendNotificationAll";
+import { useDebounce } from "../../../../../hook/useDebounce";
+import UserSearch from "./SearchUser/UserSearch";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 export default function AllUser() {
     const [allUsers, setAllUsers] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpenCreate, setIsModalOpenCreate] = useState(false);
+    const [isModalSearchOpen, setIsModalSearchOpen] = useState(false);
+    const [textSearch, setTextSearch] = useState("");
+    const [userSearch, setUserSearch] = useState([]);
     const [desc, setDesc] = useState({
         html: "",
         text: "",
     });
+
+    const debounce = useDebounce(textSearch, 700);
+    // modal search
+    const showModalSearch = () => {
+        setIsModalSearchOpen(true);
+    };
+
+    const handleOkSearch = () => {
+        setIsModalSearchOpen(false);
+    };
+
+    const handleCancelSearch = () => {
+        setIsModalSearchOpen(false);
+    };
 
     function handleEditorChange({ html, text }) {
         setDesc({ html: html, text: text });
@@ -38,18 +57,27 @@ export default function AllUser() {
         if (data.length > 0) {
             setAllUsers(data);
         }
-    }, [data]);
-
-    //change pagination
-
-    const handleChangePagination = (index) => {
-        handleChangePage(index);
-    };
+        if (textSearch) {
+            if (debounce) {
+                const textRegex = new RegExp(debounce, "i");
+                const listUserSearch = allUsers.filter((item) => {
+                    return textRegex.test(item.email) === true;
+                });
+                setUserSearch(
+                    listUserSearch.map((item) => {
+                        return item.email;
+                    })
+                );
+            }
+        } else {
+            setUserSearch([]);
+        }
+    }, [data, debounce]);
 
     // modal markdown
 
     const showModal = () => {
-        setIsModalOpen(true);
+        setIsModalOpenCreate(true);
     };
 
     const handleCancel = () => {
@@ -59,7 +87,7 @@ export default function AllUser() {
             confirmButtonText: "Ok",
         }).then((result) => {
             if (result.isConfirmed) {
-                setIsModalOpen(false);
+                setIsModalOpenCreate(false);
                 setDesc({
                     html: "",
                     text: "",
@@ -69,7 +97,7 @@ export default function AllUser() {
     };
 
     const handleOk = () => {
-        setIsModalOpen(false);
+        setIsModalOpenCreate(false);
     };
 
     const handleNewNotify = () => {
@@ -87,11 +115,49 @@ export default function AllUser() {
         });
     };
 
+    //change pagination
+
+    const handleChangePagination = (index) => {
+        handleChangePage(index);
+        setTextSearch("");
+        setUserSearch([]);
+    };
+
     return (
         <div>
             <p>Người dùng</p>
 
             <Row justify="end" gutter={10} className="mb-10">
+                <Col span={3}>
+                    <Button onClick={showModalSearch}>Search</Button>
+                    <Modal
+                        title="Basic Modal"
+                        open={isModalSearchOpen}
+                        onOk={handleOkSearch}
+                        onCancel={handleCancelSearch}
+                    >
+                        <Input
+                            className="mb-[5px] rounded"
+                            value={textSearch}
+                            placeholder="tìm kiếm bạn đọc"
+                            onChange={(e) => setTextSearch(e.target.value)}
+                        ></Input>
+                        <div className="max-h-[200px] overflow-auto">
+                            {userSearch &&
+                                userSearch.length > 0 &&
+                                userSearch.map((item) => {
+                                    return (
+                                        <div key={item}>
+                                            <UserSearch
+                                                content={desc.html}
+                                                user={item}
+                                            />
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    </Modal>
+                </Col>
                 <Col span={3}>
                     <Button
                         type="primary"
@@ -102,7 +168,7 @@ export default function AllUser() {
                     </Button>
                     <Modal
                         title="Tạo thông báo"
-                        open={isModalOpen}
+                        open={isModalOpenCreate}
                         onOk={handleOk}
                         onCancel={handleCancel}
                         width={1000}
