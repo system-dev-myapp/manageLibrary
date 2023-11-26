@@ -25,7 +25,7 @@ export function GetAllBooksService({ page = 1, pageSize = 10 }) {
 }
 
 export function GetBookDetailService({ slug }) {
-    return axios.get(`/book/detail/${slug}`, {
+    return axios.get(`/book/detail/${slug}?is_all=false`, {
         withCredentials: true,
     });
 }
@@ -33,9 +33,6 @@ export function GetBookDetailService({ slug }) {
 export function UpdateStatusImagesService(data) {
     return axios.patch("/book/update-image-status", data, {
         withCredentials: true,
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
     });
 }
 

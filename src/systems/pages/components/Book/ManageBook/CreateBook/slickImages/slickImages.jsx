@@ -24,6 +24,7 @@ const PreviewListImage = ({
         if (data.length > 0) {
             let arrLinkImage = data.map((item) => {
                 return {
+                    id: item.id,
                     link: isUpdate
                         ? isAddImage
                             ? URL.createObjectURL(item)
@@ -68,28 +69,22 @@ const PreviewListImage = ({
         setLinkPreview(link);
     };
 
-    const onChange = (image) => {
+    const onChange = async (image) => {
         let dataBuider = {
             id: image.id,
             is_active: !image.is_active,
         };
 
-        const _fetch = async () => {
-            try {
-                // eslint-disable-next-line no-unused-vars
-                const Res = await HandleApi(
-                    UpdateStatusImagesService,
-                    dataBuider
-                );
-            } catch (err) {
-                console.log(err);
-                Swal.fire({
-                    icon: "error",
-                    title: "Đã xảy ra lỗi bạn vui lòng thử lại sau !",
-                });
-            }
-        };
-        _fetch();
+        try {
+            // eslint-disable-next-line no-unused-vars
+            const Res = await HandleApi(UpdateStatusImagesService, dataBuider);
+        } catch (err) {
+            console.log(err);
+            Swal.fire({
+                icon: "error",
+                title: "Đã xảy ra lỗi bạn vui lòng thử lại sau !",
+            });
+        }
     };
 
     return (
