@@ -244,7 +244,7 @@ export default function CreateBlog() {
                     className="w-full"
                     onClick={slug ? handleUpdateBlog : handleCreateBlog}
                 >
-                    {slug ? "Update sách" : "Tạo sách"}
+                    {slug ? "Update Blog" : "Tạo Blog"}
                 </Button>
             </div>
         </div>

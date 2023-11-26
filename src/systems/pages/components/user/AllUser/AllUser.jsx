@@ -90,7 +90,6 @@ export default function AllUser() {
     return (
         <div>
             <p>Người dùng</p>
-
             <Row justify="end" gutter={10} className="mb-10">
                 <Col span={3}>
                     <Button
@@ -132,7 +131,6 @@ export default function AllUser() {
                     )}
                 </Col>
             </Row>
-
             <Row>
                 <Col span={24}>
                     <Table

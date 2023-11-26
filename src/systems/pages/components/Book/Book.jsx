@@ -1,16 +1,16 @@
 import React from "react";
-import CreateBook from "./ManageBook/CreateBook/createBook";
 import GetAllBook from "./ManageBook/getAllBook/getAllBook";
 import { useLocation, useNavigate } from "react-router";
 import { RouterDTO } from "../../../../utils/routers.dto";
 import { Tabs } from "antd";
+import HandleBook from "./ManageBook/CreateBook/handleBook";
 
 export default function Book() {
     const book = [
         {
             key: RouterDTO.book.handleBook,
             label: "Tạo sách",
-            children: <CreateBook />,
+            children: <HandleBook />,
         },
         {
             key: RouterDTO.book.allBook,

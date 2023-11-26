@@ -21,7 +21,7 @@ import { dataCategories } from "../../../../../../data/dataCategories/dateCatego
 import handleUploadImageMarkdown from "../../../../../../helpers/handleUploadImageMarkdown";
 import { BASE_URL } from "../../../../../../utils/constant";
 
-export default function CreateBook() {
+export default function HandleBook() {
     const { TextArea } = Input;
     const [title, setTitle] = useState("");
     const [markdown, setMarkdown] = useState({
@@ -109,6 +109,7 @@ export default function CreateBook() {
                 title: "Đã xảy ra lõi bạn vui lòng thử lại sau !",
             });
         }
+        setIsLoading(false);
     }, [slug]);
 
     // reset states
@@ -351,6 +352,9 @@ export default function CreateBook() {
                     title: "Bạn đã update thành công",
                 });
                 setCheckedList([]);
+                await fetch(
+                    "https://libbook.fstack.com.vn/api/revalidatebook?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidWlsZCI6dHJ1ZX0.MhVgMq4AdHvFLy-6se9sokN2oUttJE-ZsfHSCe6YEgI&tag=detail-book"
+                );
             }
         } catch (err) {
             console.log(err);

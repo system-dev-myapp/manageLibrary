@@ -20,3 +20,7 @@ export function sendNotifyAllService(data) {
         // },
     });
 }
+
+export const userLineChartService = () => {
+    return axios.get("/user/line-chart");
+};

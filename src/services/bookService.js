@@ -39,11 +39,6 @@ export function UpdateStatusImagesService(data) {
     });
 }
 
-// export function RevalidateBookService() {
-//     return axios.get(
-//         ` https://lib-next-js.vercel.app/api/revalidatebook?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidWlsZCI6dHJ1ZX0.MhVgMq4AdHvFLy-6se9sokN2oUttJE-ZsfHSCe6YEgI&tag=detail-book`,
-//         {
-//             withCredentials: true,
-//         }
-//     );
-// }
+export const bookLineChart = () => {
+    return axios.get("/book/line-chart");
+};
