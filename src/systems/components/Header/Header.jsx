@@ -1,5 +1,6 @@
 import { Tooltip } from "antd";
 import SearchBook from "./components/Search/Search";
+import { Link } from "react-router-dom";
 
 export default function Header() {
     return (
@@ -16,12 +17,12 @@ export default function Header() {
             </div>
 
             <div className="right flex flex-1 justify-end">
-                <div className="flex items-center ml-[100px] w-[150px]">
+                {/* <div className="flex items-center ml-[100px] w-[150px]">
                     <SearchBook />
-                </div>
+                </div> */}
                 <div className="flex  items-center mr-[20px] text-[12px]">
                     <i className="bi bi-house-door mr-[4px]"></i>
-                    <span>Trang chủ</span>
+                    <Link to={"/"}>Trang chủ</Link>
                 </div>
 
                 <Tooltip title={<PopperMenu></PopperMenu>} color="white">

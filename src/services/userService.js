@@ -17,3 +17,7 @@ export function sendNotifyAllService(data) {
         withCredentials: true,
     });
 }
+
+export const userLineChartService = () => {
+    return axios.get("/user/line-chart");
+};

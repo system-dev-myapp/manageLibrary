@@ -14,3 +14,9 @@ export function updateActiveOrder(data) {
         withCredentials: true,
     });
 }
+
+export const orderLineChartService = () => {
+    return axios.get("/order/line-chart", {
+        withCredentials: true,
+    });
+};

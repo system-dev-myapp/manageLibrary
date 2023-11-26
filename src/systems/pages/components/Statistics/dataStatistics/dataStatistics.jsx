@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -10,6 +10,10 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import { HandleApi } from "../../../../../services/handleApi";
+import { orderLineChartService } from "../../../../../services/orderService";
+import { bookLineChart } from "../../../../../services/bookService";
+import { userLineChartService } from "../../../../../services/userService";
 
 // Đăng ký các thành phần cần thiết
 ChartJS.register(
@@ -49,38 +53,63 @@ const options = {
     },
 };
 
-const data = {
-    labels: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ],
-    datasets: [
-        {
-            label: "Dataset 1",
-            data: generateRandomData(),
-            borderColor: "rgb(255, 99, 132)",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Dataset 2",
-            data: generateRandomData(),
-            borderColor: "rgb(53, 162, 235)",
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
-};
-
 const DataStatistics = () => {
+    const [orders, setOrders] = useState([]);
+    const [books, setBooks] = useState([]);
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const _fetch = async () => {
+            const [ResOrder, ResBook, ResUser] = await Promise.all([
+                await HandleApi(orderLineChartService),
+                await bookLineChart(),
+                await userLineChartService(),
+            ]);
+            setOrders(ResOrder);
+            setBooks(ResBook);
+            setUsers(ResUser);
+        };
+
+        _fetch();
+    }, []);
+
+    const data = {
+        labels: [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ],
+        datasets: [
+            {
+                label: "Sách Mượn",
+                data: orders,
+                borderColor: "rgb(255, 99, 132)",
+                backgroundColor: "rgba(255, 99, 132, 0.5)",
+            },
+            {
+                label: "Sách Hệ Thống",
+                data: books,
+                borderColor: "rgb(53, 162, 235)",
+                backgroundColor: "rgba(53, 162, 235, 0.5)",
+            },
+            {
+                label: "User Hệ Thống",
+                data: users,
+                borderColor: "rgb(100,90, 95)",
+                backgroundColor: "rgb(100,90, 95)",
+            },
+        ],
+    };
+
     return <Line className="h-[500px]" options={options} data={data} />;
 };
 

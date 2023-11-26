@@ -7,10 +7,10 @@ export const childrenList = [
 ];
 
 export const urlchildrenList = [
-    ["/dashboard"],
+    ["/"],
     ["/cate/createCategory", "/book/handle"],
     ["/user/allUser"],
-    ["/blog/createBlog"],
+    ["/blog/handleBlogs"],
     ["/order/all"],
 ];
 

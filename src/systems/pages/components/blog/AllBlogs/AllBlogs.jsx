@@ -81,9 +81,7 @@ export default function AllBlogs() {
                                     <td className="h-[50px] text-center ">
                                         {item.id}
                                     </td>
-                                    <td className="text-center">
-                                        {item.title}
-                                    </td>
+                                    <td>{item.title}</td>
                                     <td className="text-center ">
                                         {item.is_active ? "Hiển thị" : "Ẩn"}
                                     </td>
